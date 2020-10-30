@@ -23,9 +23,12 @@ import com.acmerobotics.roadrunner.trajectory.constraints.MecanumConstraints;
 import com.acmerobotics.roadrunner.util.NanoClock;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.lynx.LynxModule;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
@@ -51,8 +54,8 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
  */
 @Config
 public class SampleMecanumDrive extends MecanumDrive {
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(0, 0, 0);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(0, 0, 0);
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(7, 0, 0.3);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(5, 0, 0.1);
 
     public static double LATERAL_MULTIPLIER = 1;
 
@@ -80,10 +83,27 @@ public class SampleMecanumDrive extends MecanumDrive {
     private List<DcMotorEx> motors;
     private BNO055IMU imu;
 
+    // START ORIG HW BEEP
+    public CRServo rightIntake = null;
+    public CRServo leftIntake = null;
+    public DcMotor droidLifterLeft = null;
+    public DcMotor droidLifterRight = null;
+    public DcMotor outExtrusion = null;
+    public Servo claw = null;
+    public Servo clawTurner = null;
+    public Servo foundation1 = null;
+    public Servo foundation2 = null;
+    public Servo clawAid = null;
+    public Servo capstone = null;
+    public NormalizedColorSensor colorSensor = null;
+    public NormalizedColorSensor stoneColorSensor = null;
+    // END ORIG HW BEEP
+    //public HardwareMap hardwareMap = null;
+
     private Pose2d lastPoseOnTurn;
 
     public SampleMecanumDrive(HardwareMap hardwareMap) {
-        super(kV, kA, kStatic, TRACK_WIDTH, TRACK_WIDTH, LATERAL_MULTIPLIER);
+        super(kV, kA, kStatic, TRACK_WIDTH, LATERAL_MULTIPLIER);
 
         dashboard = FtcDashboard.getInstance();
         dashboard.setTelemetryTransmissionInterval(25);
@@ -117,10 +137,10 @@ public class SampleMecanumDrive extends MecanumDrive {
         // upward (normal to the floor) using a command like the following:
         // BNO055IMUUtil.remapAxes(imu, AxesOrder.XYZ, AxesSigns.NPN);
 
-        leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
-        leftRear = hardwareMap.get(DcMotorEx.class, "leftRear");
-        rightRear = hardwareMap.get(DcMotorEx.class, "rightRear");
-        rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
+        leftFront = hardwareMap.get(DcMotorEx.class, "left_front");
+        leftRear = hardwareMap.get(DcMotorEx.class, "left_back");
+        rightRear = hardwareMap.get(DcMotorEx.class, "right_back");
+        rightFront = hardwareMap.get(DcMotorEx.class, "right_front");
 
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
 
@@ -141,9 +161,49 @@ public class SampleMecanumDrive extends MecanumDrive {
         }
 
         // TODO: reverse any motors using DcMotor.setDirection()
-
+        leftFront.setDirection(DcMotor.Direction.REVERSE);
+        leftRear.setDirection(DcMotor.Direction.REVERSE);
+        rightFront.setDirection(DcMotor.Direction.FORWARD);
+        rightRear.setDirection(DcMotor.Direction.FORWARD);
         // TODO: if desired, use setLocalizer() to change the localization method
         // for instance, setLocalizer(new ThreeTrackingWheelLocalizer(...));
+        droidLifterLeft = hardwareMap.get(DcMotor.class, "droid_left");
+        droidLifterRight = hardwareMap.get(DcMotor.class, "droid_right");
+        outExtrusion = hardwareMap.get(DcMotor.class, "out_extrusion");
+        leftIntake = hardwareMap.get(CRServo.class, "left_intake");
+        rightIntake = hardwareMap.get(CRServo.class, "right_intake");
+        claw = hardwareMap.get(Servo.class, "claw");
+        clawTurner = hardwareMap.get(Servo.class, "claw_turner");
+        foundation1 = hardwareMap.get(Servo.class, "foundation1");
+        foundation2 = hardwareMap.get(Servo.class, "foundation2");
+        clawAid = hardwareMap.get(Servo.class, "claw_aid");
+        capstone = hardwareMap.get(Servo.class, "capstone");
+
+        colorSensor = hardwareMap.get(NormalizedColorSensor.class, "sensor_color");
+        stoneColorSensor = hardwareMap.get(NormalizedColorSensor.class, "sensor_color_dance");
+//        touchSensor = hardwareMap.get(DigitalChannel.class, "sensor_digital");
+
+        //        webcam = hwMap.get(WebcamName.class, "webcam");
+        //rightSonic.changeI2cAddress(0xe2);
+
+        // Set Motor and Servo Direction
+        droidLifterRight.setDirection(DcMotor.Direction.REVERSE);
+        droidLifterLeft.setDirection(DcMotor.Direction.REVERSE);
+        outExtrusion.setDirection(DcMotor.Direction.FORWARD);
+        claw.setDirection(Servo.Direction.FORWARD);
+        foundation1.setDirection(Servo.Direction.FORWARD);
+        foundation1.setDirection(Servo.Direction.FORWARD);
+        clawTurner.setDirection(Servo.Direction.FORWARD);
+        clawAid.setDirection(Servo.Direction.FORWARD);
+
+        // Set Servos to Zero Power
+        leftIntake.setPower(0);
+        rightIntake.setPower(0);
+
+        outExtrusion.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        droidLifterLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        droidLifterRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     public TrajectoryBuilder trajectoryBuilder(Pose2d startPose) {
@@ -158,7 +218,7 @@ public class SampleMecanumDrive extends MecanumDrive {
         return new TrajectoryBuilder(startPose, startHeading, constraints);
     }
 
-    public void turnAsync(double angle) {
+    public void turnAsync(double angle, int i, int i1, int i2) {
         double heading = getPoseEstimate().getHeading();
 
         lastPoseOnTurn = getPoseEstimate();
@@ -176,7 +236,7 @@ public class SampleMecanumDrive extends MecanumDrive {
     }
 
     public void turn(double angle) {
-        turnAsync(angle);
+        turnAsync(angle,70,60,40);
         waitForIdle();
     }
 
