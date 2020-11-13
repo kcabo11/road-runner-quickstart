@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.drive.opmode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
@@ -22,18 +23,17 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
         private OpenCvInternalCamera phoneCam;
         private UltimateGoalDeterminationPipeline pipeline;
         HardwareMap hardwareMap;
-        HardwareBeep robot;
+        SampleMecanumDrive robot;
         Telemetry telemetry;
         ElapsedTime timer;
         private boolean openCVIsActive = true;
         public static String currentConfig = "";
 
-        public LibraryOpenCV(HardwareBeep newHardwareBeep, Telemetry newTelemetry, HardwareMap newHwMap) {
+        public LibraryOpenCV(SampleMecanumDrive newHardwareMap, Telemetry newTelemetry, HardwareMap newHwMap) {
 
-            robot = newHardwareBeep;
+            robot = newHardwareMap;
             telemetry = newTelemetry;
             hardwareMap = newHwMap;
-
         }
 
         /**
@@ -44,9 +44,9 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
         public String findRingConfig() {
             long startTime = 0;
             String previousConfig = "";
-            String RingConfig = "";
+            String currentPos = "";
 
-            RingConfig = currentRingPos();
+            currentPos = currentRingPos();
 
             telemetry.addData("Frame Count", phoneCam.getFrameCount());
             telemetry.addData("FPS", String.format("%.2f", phoneCam.getFps()));
@@ -56,24 +56,27 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
             telemetry.addData("Theoretical max FPS", phoneCam.getCurrentPipelineMaxFps());
             telemetry.addData("Analysis", pipeline.getAnalysis());
             telemetry.addData("Position", pipeline.position);
-            telemetry.addData("currentConfig", currentConfig);
-            telemetry.update();
+            telemetry.addData("currentConfig", currentPos);
             telemetry.update();
 
-            return currentRingPos();
+            return currentPos;
         }
 
         public void initOpenCV() {
 
             int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
             phoneCam = OpenCvCameraFactory.getInstance().createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
-            phoneCam.openCameraDevice();
-
             // Specify the image processing you are using to receive feedback
             pipeline = new UltimateGoalDeterminationPipeline();
             phoneCam.setPipeline(pipeline);
+            phoneCam.setViewportRenderingPolicy(OpenCvCamera.ViewportRenderingPolicy.OPTIMIZE_VIEW);
+            phoneCam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
 
-            phoneCam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+                @Override
+                public void onOpened() {
+                    phoneCam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+                }
+            });
         }
 
         public void shutDownOpenCV() {
@@ -184,16 +187,16 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
             timer.reset();
 
             if (pipeline.position == UltimateGoalDeterminationPipeline.RingPosition.ONE) {
-                telemetry.addData("currentConfig = A, ONE", "");
+                telemetry.addData("currentConfig = B, ONE", "");
                 telemetry.update();
                 currentConfig = "ONE";
 
             } else if (pipeline.position == UltimateGoalDeterminationPipeline.RingPosition.FOUR) {
-                telemetry.addData("currentConfig = B, FOUR", "");
+                telemetry.addData("currentConfig = C, FOUR", "");
                 telemetry.update();
                 currentConfig = "FOUR";
             } else if (pipeline.position == UltimateGoalDeterminationPipeline.RingPosition.NONE) {
-                telemetry.addData("currentConfig = C, NONE", "");
+                telemetry.addData("currentConfig = A, NONE", "");
                 telemetry.update();
                 currentConfig = "NONE";
             }

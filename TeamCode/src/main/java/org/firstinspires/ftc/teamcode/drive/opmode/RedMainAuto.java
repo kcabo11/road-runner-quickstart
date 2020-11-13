@@ -21,24 +21,28 @@ import org.opencv.core.Mat;
 
 @Config
 @Autonomous(group = "Blue Side Auto")
-public class BlueMainAuto extends LinearOpMode {
-    static SampleMecanumDrive drive;
-    public ElapsedTime runtime = new ElapsedTime();
+public class RedMainAuto extends LinearOpMode {
+    static SampleMecanumDrive robot;
     LibraryOpenCV opencv;
-    String SkystonePosition = "";
+//    static LibraryTranslatePos translatePos;
+    String RingConfig;
 
     static Pose2d startingpos;
     static Pose2d myPos;
 
-    static Trajectory deliveringTargetZone;
+    static Trajectory targetZoneDelivery;
+    static Trajectory grabSecondWG;
     static Vector2d[] targetzonepath  = new Vector2d[3];
-
+    static Vector2d grabWobbleGoal;
 
     public static void generatePlotPoints() {
-         startingpos = new Pose2d(-60,-60);
-         targetzonepath[0] = new Vector2d (0,-60);
-         targetzonepath[1] = new Vector2d (0,60);
-         targetzonepath[2] = new Vector2d (0,-60);
+         startingpos = new Pose2d(84,8);
+         targetzonepath[0] = new Vector2d (84,0);//-60
+         targetzonepath[1] = new Vector2d (108,0);//-60
+         targetzonepath[2] = new Vector2d (132,0);//-60
+
+        grabWobbleGoal = new Vector2d(12,24);
+
 
     }
 
@@ -51,74 +55,71 @@ public class BlueMainAuto extends LinearOpMode {
         DriveConstraints newconstraint = new DriveConstraints(40,20,0,
                 Math.toRadians(180),Math.toRadians(180), 0);
 
-            if (pos == "left"){
+            if (pos == "NONE"){
 
                 n = 0;
             }
-            else if (pos == "middle"){
+            else if (pos == "ONE"){
                 n = 1;
             }
-            else if (pos == "right"){
+            else if (pos == "FOUR"){
                 n = 2;
             }
 
-            deliveringTargetZone = new TrajectoryBuilder(startingpos, newconstraint)
+            targetZoneDelivery = new TrajectoryBuilder(startingpos, newconstraint)
                     .lineTo(targetzonepath[n])
+                    .build();
+
+            grabSecondWG = new TrajectoryBuilder(targetZoneDelivery.end(), newconstraint)
+                    .splineTo(grabWobbleGoal,180)
                     .build();
 }
     @Override
     public void runOpMode() throws InterruptedException {
-        drive = new SampleMecanumDrive(hardwareMap);
+        robot = new SampleMecanumDrive(hardwareMap);
         telemetry.addData("Telemetry", "robot initializing");
         telemetry.update();
 
+        opencv = new LibraryOpenCV(robot, telemetry, hardwareMap);
+        opencv.initOpenCV();
+        telemetry.addData("OpenCV initialized", "");
+        telemetry.update();
+
         while (!isStarted()) {
-            SkystonePosition = opencv.findRingConfig();
-            telemetry.addData("OpenCV initialized", "");
+            RingConfig = opencv.findRingConfig();
+            telemetry.addData("timer", getRuntime());
             telemetry.update();
-            synchronized (this) {
-                try {
-                    this.wait();
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    return;
-                }
-            }
         }
         opencv.shutDownOpenCV();
 
-        String pos = "left";
-
-        telemetry.addData("Telemetry", "run opMode start");
+        telemetry.addData("RunOpMode","");
         telemetry.update();
 
-        generatePath(pos);
+        generatePath(RingConfig);
 
-        /* IF ringconfig 0 Rings
+        if (RingConfig == "NONE"){
+            telemetry.addData("Position A","");
+            telemetry.update();
 
-        drive forward (3.5,.5)
-        strafe left(1.5,2.5)
-        Run Shooter to hit power shots
-        Drive forward (1.5,3.5)
-         */
+            robot.followTrajectory(targetZoneDelivery);
+            sleep(5000);
+            robot.followTrajectory(grabSecondWG);
 
-        drive.followTrajectory(deliveringTargetZone);
+        }if (RingConfig == "ONE"){
+            telemetry.addData("Position B", "");
+            telemetry.update();
 
-        /* IF ringconfig 1 Rings
+            robot.followTrajectory(targetZoneDelivery);
+            sleep(5000);
+            robot.followTrajectory(grabSecondWG);
 
-        drive forward ()3.5,4.5
-        strafe back (1.5,2.5)
-        Run shooter to hit power shots
-        drive forward (1.5,3.5)
-         */
+        }if (RingConfig == "FOUR"){
+            telemetry.addData("Position C", "");
+            telemetry.update();
 
-        /* IF ringconfig 4 rings
-        drive forward (3.5,5.5)
-        strafe back (1.5,2.5)
-        run shooter to hit power shots
-        drive forward (1.5,3.5)
-
-         */
-
+            robot.followTrajectory(targetZoneDelivery);
+            sleep(5000);
+            robot.followTrajectory(grabSecondWG);
         }
     }
+}

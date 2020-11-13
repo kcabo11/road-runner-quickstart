@@ -3,13 +3,18 @@ package org.firstinspires.ftc.teamcode.drive.opmode;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 @Config
 @Autonomous(group = "Blue Side Skystone Auto")
 public class TestingOpenCV extends LinearOpMode {
-    static HardwareBeep robot;
+    static SampleMecanumDrive robot;
     LibraryOpenCV opencv;
-    String SkystonePosition;
+    String RingConfig;
 
     public String GenerateRingConfig (String pos) {
         int n = 0;
@@ -27,14 +32,17 @@ public class TestingOpenCV extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new HardwareBeep();
+        robot = new SampleMecanumDrive(hardwareMap);
         telemetry.addData("Telemetry", "robot initializing");
         telemetry.update();
 
+        opencv = new LibraryOpenCV(robot, telemetry, hardwareMap);
+        opencv.initOpenCV();
+        telemetry.addData("OpenCV initialized", "");
+        telemetry.update();
+
         while (!isStarted()) {
-            SkystonePosition = opencv.findRingConfig();
-            telemetry.addData("OpenCV initialized", "");
-            telemetry.update();
+            RingConfig = opencv.findRingConfig();
             synchronized (this) {
                 try {
                     this.wait();
@@ -46,15 +54,17 @@ public class TestingOpenCV extends LinearOpMode {
         }
         opencv.shutDownOpenCV();
 
-        GenerateRingConfig(SkystonePosition);
-        telemetry.addData("Ring configuration", SkystonePosition);
-        telemetry.update();
-//        waitForStart();
-//        opencv = new LibraryOpenCV(robot,telemetry, hardwareMap);
-//        opencv.initOpenCV();
-//        opencv.findRingConfig();
-//        sleep(5000);
-//        telemetry.addData("OpenCV initialized", "");
-//        telemetry.update();
+        GenerateRingConfig(RingConfig);
+
+        if (RingConfig == "NONE"){
+            telemetry.addData("Ring Configuration", RingConfig);
+            telemetry.update();
+        }if (RingConfig == "ONE"){
+            telemetry.addData("Ring Configuration", RingConfig);
+            telemetry.update();
+        }if (RingConfig == "FOUR"){
+            telemetry.addData("Ring Configuration", RingConfig);
+            telemetry.update();
+        }
     }
 }
