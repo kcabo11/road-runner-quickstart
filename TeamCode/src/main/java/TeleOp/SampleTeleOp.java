@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.drive.opmode;
+package TeleOp;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -35,17 +35,17 @@ public class SampleTeleOp extends LinearOpMode
         fireSelector = hardwareMap.servo.get("fire_selector");
 
 
-                rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
         rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
         waitForStart();
 
     while (opModeIsActive()) {
 
-        //STRAIFING WITH RIGHT STICK
-        rightFront.setPower(gamepad1.right_stick_x);
-        leftFront.setPower(-gamepad1.right_stick_x);
-        rightBack.setPower(-gamepad1.right_stick_x);
-        leftBack.setPower(gamepad1.right_stick_x);
+        //Strifing with the right stick
+        rightFront.setPower(gamepad1.left_stick_x);
+        leftFront.setPower(-gamepad1.left_stick_x);
+        rightBack.setPower(-gamepad1.left_stick_x);
+        leftBack.setPower(gamepad1.left_stick_x);
 
 
         //forward and backwards with right stick
@@ -55,13 +55,13 @@ public class SampleTeleOp extends LinearOpMode
         leftBack.setPower(gamepad1.right_stick_y);
 
         //TURNING
-        if (gamepad1.left_stick_x >= .01) {
+        if (gamepad1.right_stick_x >= .01) {
             rightFront.setPower(.8);
             leftFront.setPower(-.8);
             rightBack.setPower(.8);
             leftBack.setPower(-.8);
         }
-        if (-gamepad1.left_stick_x >= .01) {
+        if (-gamepad1.right_stick_x >= .01) {
             rightFront.setPower(-.8);
             leftFront.setPower(.8);
             rightBack.setPower(-.8);
@@ -70,10 +70,10 @@ public class SampleTeleOp extends LinearOpMode
 
         }
         if (gamepad1.right_trigger > 0){
-            intake.setPower(-.8);
+            intake.setPower(.8);
         }
         else if (gamepad1.right_trigger < 0) {
-            intake.setPower(.8);
+            intake.setPower(-.8);
         }
         else{
             intake.setPower(0);
@@ -92,7 +92,20 @@ public class SampleTeleOp extends LinearOpMode
         else if (!gamepad1.a){
             fireSelector.setPosition(1);
         }
-//        switch (intake_state){
+
+        if (gamepad1.a) {
+            fireSelector.setPosition(-1);
+            sleep(100);
+            fireSelector.setPosition(0);
+        }
+
+
+
+
+
+
+
+        //        switch (intake_state){
 //            case 0:
 //                intake.setPower(0);
 //                flyWheel.setPower(0);

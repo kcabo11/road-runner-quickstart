@@ -1,7 +1,10 @@
-package org.firstinspires.ftc.teamcode.drive.opmode;
+package TeleOp;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+
+import org.firstinspires.ftc.teamcode.drive.opmode.HardwareBeep;
 
 /**
  * @author Beep Patrol
@@ -10,6 +13,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
  * <p>
  * This is our main teleOp program which controls the robot during the driver controlled period.
  */
+@Disabled
 @TeleOp(name = "TeleOp Program", group = "TankDrive")
 public class TeleOpProgram extends OpMode {
 

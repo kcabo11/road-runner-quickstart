@@ -1,24 +1,19 @@
-package org.firstinspires.ftc.teamcode.drive.opmode;
+package org.firstinspires.ftc.teamcode.drive.opmode.Automous;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.acmerobotics.roadrunner.path.QuinticSpline;
-import com.acmerobotics.roadrunner.path.PathSegment;
-import com.acmerobotics.roadrunner.profile.MotionState;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints;
-import com.acmerobotics.roadrunner.util.Angle;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.util.ElapsedTime;
-import com.acmerobotics.roadrunner.path.Path;
 
-import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-import org.opencv.core.Mat;
+import Sample.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.drive.opmode.LibraryOpenCV;
 
+@Disabled
 @Config
 @Autonomous(group = "Blue Side Auto")
 public class RedMainAuto extends LinearOpMode {

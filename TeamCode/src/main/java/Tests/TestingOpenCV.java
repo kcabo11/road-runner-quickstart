@@ -1,14 +1,13 @@
-package org.firstinspires.ftc.teamcode.drive.opmode;
+package Tests;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-
+import Sample.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.drive.opmode.LibraryOpenCV;
+@Disabled
 @Config
 @Autonomous(group = "Blue Side Skystone Auto")
 public class TestingOpenCV extends LinearOpMode {

@@ -1,5 +1,6 @@
-package org.firstinspires.ftc.teamcode.drive.opmode;
+package Tests;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -14,6 +15,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * <p>
  * This is our main teleOp program which controls the robot during the driver controlled period.
  */
+@Disabled
 @TeleOp(name = "TelepArmProgram", group = "TankDrive")
 public class TestingArmProgram extends OpMode {
 
