@@ -1,7 +1,5 @@
 package Sample;
 
-import androidx.annotation.NonNull;
-
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.config.Config;
@@ -23,13 +21,13 @@ import com.acmerobotics.roadrunner.trajectory.constraints.MecanumConstraints;
 import com.acmerobotics.roadrunner.util.NanoClock;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.lynx.LynxModule;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
 import org.firstinspires.ftc.teamcode.util.DashboardUtil;
@@ -38,6 +36,8 @@ import org.firstinspires.ftc.teamcode.util.LynxModuleUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import androidx.annotation.NonNull;
 
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.BASE_CONSTRAINTS;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MOTOR_VELO_PID;
@@ -54,8 +54,8 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
  */
 @Config
 public class SampleMecanumDrive extends MecanumDrive {
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(7, 0, 0.3);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(5, 0, 0.1);
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(0, 0, 0.008303736161316279);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(0, 0, 0);
 
     public static double LATERAL_MULTIPLIER = 1;
 
@@ -84,21 +84,9 @@ public class SampleMecanumDrive extends MecanumDrive {
     private BNO055IMU imu;
 
     // START ORIG HW BEEP
-    public CRServo rightIntake = null;
-    public CRServo leftIntake = null;
-    public DcMotor droidLifterLeft = null;
-    public DcMotor droidLifterRight = null;
-    public DcMotor outExtrusion = null;
-    public Servo claw = null;
-    public Servo clawTurner = null;
-    public Servo foundation1 = null;
-    public Servo foundation2 = null;
-    public Servo clawAid = null;
-    public Servo capstone = null;
-    public NormalizedColorSensor colorSensor = null;
-    public NormalizedColorSensor stoneColorSensor = null;
-    // END ORIG HW BEEP
-    //public HardwareMap hardwareMap = null;
+    public DcMotor intake = null;
+    public DcMotor fly_wheel = null;
+    public Servo fire_selector = null;
 
     private Pose2d lastPoseOnTurn;
 
@@ -167,43 +155,16 @@ public class SampleMecanumDrive extends MecanumDrive {
         rightRear.setDirection(DcMotor.Direction.FORWARD);
         // TODO: if desired, use setLocalizer() to change the localization method
         // for instance, setLocalizer(new ThreeTrackingWheelLocalizer(...));
-        droidLifterLeft = hardwareMap.get(DcMotor.class, "droid_left");
-        droidLifterRight = hardwareMap.get(DcMotor.class, "droid_right");
-        outExtrusion = hardwareMap.get(DcMotor.class, "out_extrusion");
-        leftIntake = hardwareMap.get(CRServo.class, "left_intake");
-        rightIntake = hardwareMap.get(CRServo.class, "right_intake");
-        claw = hardwareMap.get(Servo.class, "claw");
-        clawTurner = hardwareMap.get(Servo.class, "claw_turner");
-        foundation1 = hardwareMap.get(Servo.class, "foundation1");
-        foundation2 = hardwareMap.get(Servo.class, "foundation2");
-        clawAid = hardwareMap.get(Servo.class, "claw_aid");
-        capstone = hardwareMap.get(Servo.class, "capstone");
-
-        colorSensor = hardwareMap.get(NormalizedColorSensor.class, "sensor_color");
-        stoneColorSensor = hardwareMap.get(NormalizedColorSensor.class, "sensor_color_dance");
-//        touchSensor = hardwareMap.get(DigitalChannel.class, "sensor_digital");
+        intake = hardwareMap.get(DcMotor.class, "intake");
+        fly_wheel = hardwareMap.get(DcMotor.class, "fly_wheel");
+        fire_selector = hardwareMap.get(Servo.class, "fire_selector");
 
         //        webcam = hwMap.get(WebcamName.class, "webcam");
         //rightSonic.changeI2cAddress(0xe2);
 
-        // Set Motor and Servo Direction
-        droidLifterRight.setDirection(DcMotor.Direction.REVERSE);
-        droidLifterLeft.setDirection(DcMotor.Direction.REVERSE);
-        outExtrusion.setDirection(DcMotor.Direction.FORWARD);
-        claw.setDirection(Servo.Direction.FORWARD);
-        foundation1.setDirection(Servo.Direction.FORWARD);
-        foundation1.setDirection(Servo.Direction.FORWARD);
-        clawTurner.setDirection(Servo.Direction.FORWARD);
-        clawAid.setDirection(Servo.Direction.FORWARD);
-
         // Set Servos to Zero Power
-        leftIntake.setPower(0);
-        rightIntake.setPower(0);
+        intake.setPower(0);
 
-        outExtrusion.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        droidLifterLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        droidLifterRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     public TrajectoryBuilder trajectoryBuilder(Pose2d startPose) {

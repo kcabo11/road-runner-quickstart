@@ -22,9 +22,9 @@ android {
 }
 
 repositories {
-    maven { url = "https://dl.bintray.com/first-tech-challenge/ftcsdk/" }
 
     flatDir {
+        maven { url = "https://dl.bintray.com/first-tech-challenge/ftcsdk/" }
         dirs '../libs'
     }
 }

@@ -15,7 +15,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * <p>
  * This is our main teleOp program which controls the robot during the driver controlled period.
  */
-@Disabled
 @TeleOp(name = "TelepArmProgram", group = "TankDrive")
 public class TestingArmProgram extends OpMode {
 

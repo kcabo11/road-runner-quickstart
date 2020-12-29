@@ -384,6 +384,7 @@ public class FtcRobotControllerActivity extends Activity
     FtcDashboard.start();
   }
 
+
   protected UpdateUI createUpdateUI() {
     Restarter restarter = new RobotRestarter();
     UpdateUI result = new UpdateUI(this, dimmer);
