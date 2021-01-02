@@ -11,7 +11,6 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 @TeleOp(name = "SampleOpModeJosh", group = "Tutorials")
 public class SampleTeleOp extends LinearOpMode
 {
-    private int intake_state = 0;
 
     private DcMotor rightFront;
     private DcMotor leftFront;
@@ -20,7 +19,7 @@ public class SampleTeleOp extends LinearOpMode
     private DcMotor intake;
     private DcMotor flyWheel;
     private Servo fireSelector;
-
+    private int fire_state = 0;
 
     @Override
     public void runOpMode() {
@@ -66,9 +65,9 @@ public class SampleTeleOp extends LinearOpMode
             leftFront.setPower(.8);
             rightBack.setPower(-.8);
             leftBack.setPower(.8);
-
-
         }
+
+        //intake forwards
         if (gamepad1.right_trigger > 0){
             intake.setPower(.8);
         }
@@ -78,7 +77,14 @@ public class SampleTeleOp extends LinearOpMode
         else{
             intake.setPower(0);
         }
+        //intake backwards
+        if (gamepad1.left_trigger > 0){
+            intake.setPower(-.8);
+        } else {
+            intake.setPower(0);
+        }
 
+        //flywheel
         if (gamepad1.right_bumper) {
             flyWheel.setPower(-1);
         }
@@ -86,50 +92,41 @@ public class SampleTeleOp extends LinearOpMode
             flyWheel.setPower(0);
         }
 
-        if (gamepad1.a) {
-            fireSelector.setPosition(0);
+
+        //fire selector
+        switch (fire_state) {
+            case 0:
+                if(gamepad1.a){
+                    fireSelector.setPosition(0);
+                    //manual case mover thing
+
+                    sleep (200);
+                    fire_state = 1;
+                    break;
+                }
+            case 1:
+                if (fireSelector.getPosition() == 0) {
+                    fireSelector.setPosition(1);
+                    sleep(200);
+                    fire_state ++;
+                    break;
+                }
+            case 2:
+                if (fireSelector.getPosition() == 1) {
+                    fire_state = 0;
+                    break;
+                }
         }
-        else if (!gamepad1.a){
-            fireSelector.setPosition(1);
-        }
-
-        if (gamepad1.a) {
-            fireSelector.setPosition(-1);
-            sleep(100);
-            fireSelector.setPosition(0);
-        }
 
 
-
-
-
-
-
-        //        switch (intake_state){
-//            case 0:
-//                intake.setPower(0);
-//                flyWheel.setPower(0);
-//
-//                if (gamepad1.right_trigger>= .01){
-//                    intake_state ++;
-//                }
-//                break;
-//            case 1:
-//                if (gamepad1.right_trigger >= .01){
-//                    intake.setPower(.8);
-//                    intake_state ++;
-//                }
-//                break;
-//            case 2:
-//                if (gamepad1.right_trigger <)
-//        }
-
-
-
-            idle();
         telemetry.addData("H nutter", "yes");
+        telemetry.addData("left_front_enc " , leftFront.getCurrentPosition());
+        telemetry.addData("right_front_enc " , rightFront.getCurrentPosition());
+        telemetry.addData("left_back_enc " , leftBack.getCurrentPosition());
+        telemetry.addData("right_back_enc " , rightBack.getCurrentPosition());
+        telemetry.addData("fire_state", fire_state);
 
-
+        telemetry.update();
     }
     }
 }
