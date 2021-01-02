@@ -18,7 +18,6 @@ import Sample.SampleMecanumDrive;
  * encoder localizer heading may be significantly off if the track width has not been tuned).
  */
 
-@Disabled
 @Config
 @TeleOp(group = "drive")
 public class LocalizationTest extends LinearOpMode {
