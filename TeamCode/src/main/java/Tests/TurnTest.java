@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import Sample.SampleMecanumDrive;
-
 /*
  * This is a simple routine to test turning capabilities.
  */

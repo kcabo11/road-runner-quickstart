@@ -23,7 +23,7 @@ def useProguard = false
 
 android {
 
-    compileSdkVersion 28
+    compileSdkVersion 29
 
     signingConfigs {
         debug {
@@ -123,6 +123,5 @@ repositories {
     flatDir {
         dirs rootProject.file('libs')
     }
-    jcenter()
 }
 apply from: 'build.release.gradle'

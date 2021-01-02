@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.util.MovingStatistics;
 
 import org.firstinspires.ftc.robotcore.internal.system.Misc;
 import org.firstinspires.ftc.teamcode.drive.DriveConstants;
+
 import Sample.SampleMecanumDrive;
 
 /*
@@ -57,7 +58,7 @@ public class TrackWidthTuner extends LinearOpMode {
             double headingAccumulator = 0;
             double lastHeading = 0;
 
-            drive.turnAsync(Math.toRadians(ANGLE), 70, 60, 40);
+            drive.turnAsync(Math.toRadians(ANGLE));
 
             while (!isStopRequested() && drive.isBusy()) {
                 double heading = drive.getPoseEstimate().getHeading();

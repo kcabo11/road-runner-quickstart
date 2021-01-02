@@ -14,7 +14,6 @@ import Sample.SampleMecanumDrive;
  * drives in a DISTANCE-by-DISTANCE square indefinitely.
  */
 
-@Disabled
 @Config
 @Autonomous(group = "drive")
 public class FollowerPIDTuner extends LinearOpMode {

@@ -379,7 +379,7 @@ public class FtcRobotControllerActivity extends Activity
       initWifiMute(true);
     }
 
-    FtcAboutActivity.setBuildTimeFromBuildConfig(BuildConfig.BUILD_TIME);
+//    FtcAboutActivity.setBuildTimeFromBuildConfig(BuildConfig.BUILD_TIME);
 
     FtcDashboard.start();
   }
@@ -462,7 +462,6 @@ public class FtcRobotControllerActivity extends Activity
     if (preferencesHelper != null) preferencesHelper.getSharedPreferences().unregisterOnSharedPreferenceChangeListener(sharedPreferencesListener);
 
     RobotLog.cancelWriteLogcatToDisk();
-
     FtcDashboard.stop();
   }
 
@@ -682,7 +681,6 @@ public class FtcRobotControllerActivity extends Activity
         return service.getRobot().eventLoopManager;
       }
     });
-
     FtcDashboard.attachWebServer(service.getWebServer());
   }
 
