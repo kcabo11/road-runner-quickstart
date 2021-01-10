@@ -6,6 +6,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
+import org.firstinspires.ftc.teamcode.util.Encoder;
+
 
 @TeleOp(name = "SampleOpModeJosh", group = "Tutorials")
 public class SampleTeleOp extends LinearOpMode
@@ -18,8 +20,15 @@ public class SampleTeleOp extends LinearOpMode
     private DcMotor intake;
     private DcMotor flyWheel;
     private Servo fireSelector;
+    private DcMotor arm;
+    private Servo wobble_grabber;
     private int fire_state = 0;
+    private int wobble_stroker = 0;
 
+//    private double theta = 22.5;
+//    private double delta = 45;
+//    private double speed = Math.sqrt(gamepad1.left_stick_x + gamepad1.left_stick_y);
+//    private double stick_directon = Math.sin(gamepad1.left_stick_y / speed);
     @Override
     public void runOpMode() {
 
@@ -31,7 +40,8 @@ public class SampleTeleOp extends LinearOpMode
         intake = hardwareMap.dcMotor.get("intake");
         flyWheel = hardwareMap.dcMotor.get("fly_wheel");
         fireSelector = hardwareMap.servo.get("fire_selector");
-
+        arm = hardwareMap.dcMotor.get("arm");
+        wobble_grabber = hardwareMap.servo.get("wobble_grabber");
 
         rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
         rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -39,46 +49,120 @@ public class SampleTeleOp extends LinearOpMode
 
     while (opModeIsActive()) {
 
-        //Strifing with the right stick
-        rightFront.setPower(gamepad1.left_stick_x);
-        leftFront.setPower(-gamepad1.left_stick_x);
-        rightBack.setPower(-gamepad1.left_stick_x);
-        leftBack.setPower(gamepad1.left_stick_x);
+        if (gamepad1.right_stick_x == 0) {
+            //Strifing with the left stick
+            rightFront.setPower(-gamepad1.left_stick_x);
+            leftFront.setPower(gamepad1.left_stick_x);
+            rightBack.setPower(gamepad1.left_stick_x);
+            leftBack.setPower(-gamepad1.left_stick_x);
 
-
-        //forward and backwards with right stick
-        rightFront.setPower(gamepad1.right_stick_y);
-        leftFront.setPower(gamepad1.right_stick_y);
-        rightBack.setPower(gamepad1.right_stick_y);
-        leftBack.setPower(gamepad1.right_stick_y);
-
-        //TURNING
-        if (gamepad1.right_stick_x >= .01) {
-            rightFront.setPower(.8);
-            leftFront.setPower(-.8);
-            rightBack.setPower(.8);
-            leftBack.setPower(-.8);
+            //forward and backwards with left stick
+            rightFront.setPower(-gamepad1.left_stick_y);
+            leftFront.setPower(-gamepad1.left_stick_y);
+            rightBack.setPower(-gamepad1.left_stick_y);
+            leftBack.setPower(-gamepad1.left_stick_y);
+        } else {
+            //Turning
+            if (gamepad1.right_stick_x > .0) {
+                rightFront.setPower(.4);
+                leftFront.setPower(-.4);
+                rightBack.setPower(.4);
+                leftBack.setPower(-.4);
+            } else if (-gamepad1.right_stick_x > .0) {
+                rightFront.setPower(-.4);
+                leftFront.setPower(.4);
+                rightBack.setPower(-.4);
+                leftBack.setPower(.4);
+            }
         }
-        if (-gamepad1.right_stick_x >= .01) {
-            rightFront.setPower(-.8);
-            leftFront.setPower(.8);
-            rightBack.setPower(-.8);
-            leftBack.setPower(.8);
-        }
 
-        //intake forwards
-        if (gamepad1.right_trigger > 0){
+
+//            //1 direction, +x, +y 8th  /
+//          if (stick_directon <= theta + delta || stick_directon >= theta + .01) {
+//              leftFront.setPower(speed);
+//              leftBack.setPower(0);  //for the diagonal upward 45 degree
+//              rightFront.setPower(0);
+//              rightBack.setPower(speed);
+//          }
+//          // 2 position +y |
+//          else if (stick_directon <= theta + delta * 2 || stick_directon >= theta + delta + .01) {
+//            leftFront.setPower(speed);
+//            leftBack.setPower(speed);
+//            rightFront.setPower(speed);
+//            rightBack.setPower(speed);
+//          }
+//          //3 position -x, +y  \
+//          else if (stick_directon <= theta + delta * 3 || stick_directon >= theta + (delta * 2) + .01) {
+//              leftFront.setPower(0);
+//              leftBack.setPower(speed);
+//              rightFront.setPower(speed);
+//              rightBack.setPower(0);
+//          }
+//          //4 position -x (straifing)  <––
+//          else if
+//            (stick_directon <= theta + delta * 4  || stick_directon >= theta + (delta * 3) + .01) {
+//            leftFront.setPower(-speed);
+//            leftBack.setPower(speed);
+//            rightFront.setPower(speed);
+//            rightBack.setPower(-speed);
+//        }
+//          //5 position -y, -x   /
+//          else if
+//          (stick_directon <= theta + delta * 5 || stick_directon >= theta + (delta * 4) + .01) {
+//              leftFront.setPower(-speed);
+//              leftBack.setPower(0);
+//              rightFront.setPower(0);
+//              rightBack.setPower(-speed);
+//          }
+//          // 6 position -y  |
+//          else if
+//          (stick_directon <= theta + delta * 6 || stick_directon >= theta + (delta * 5) + .01) {
+//              leftFront.setPower(-speed);
+//              leftBack.setPower(-speed);
+//              rightFront.setPower(-speed);
+//              rightBack.setPower(-speed);
+//          }
+//          //7 position +x, -y   \
+//          else if
+//          (stick_directon <= theta + delta * 7 || stick_directon >= theta + (delta * 6) + .01) {
+//              leftFront.setPower(0);
+//              leftBack.setPower(-speed);
+//              rightFront.setPower(-speed);
+//              rightBack.setPower(0);
+//          }
+//          //8 position ––> (strafing)
+//          else if
+//          (stick_directon <= theta + delta * 8 || stick_directon >= theta + (delta * 7) + .01) {
+//              leftFront.setPower(speed);
+//              leftBack.setPower(-speed);
+//              rightFront.setPower(-speed);
+//              rightBack.setPower(speed);
+//          } else {
+//              rightBack.setPower(0);
+//              rightFront.setPower(0);
+//              leftBack.setPower(0);
+//              leftFront.setPower(0);
+//          }
+
+
+
+
+        if (gamepad2.right_trigger > 0){   //Intake Forwards
             intake.setPower(.8);
+        } else if (gamepad2.left_trigger > 0){    //Intake backwards
+           intake.setPower(-.8);
+        } else {
+            intake.setPower(0);
         }
-        //intake backwards
-        if (gamepad1.left_trigger > 0) {
-            intake.setPower(-.8);
-        }
+
+
         //flywheel
-        if (gamepad1.right_bumper) {
+        if (gamepad2.right_bumper) {
             flyWheel.setPower(-1);
         }
-        else {
+        else if (gamepad2.left_bumper) {
+            flyWheel.setPower(.3);
+        } else {
             flyWheel.setPower(0);
         }
 
@@ -86,7 +170,7 @@ public class SampleTeleOp extends LinearOpMode
         //fire selector
         switch (fire_state) {
             case 0:
-                if(gamepad1.a){
+                if(gamepad2.a){
                     fireSelector.setPosition(0);
                     //manual case mover thing
 
@@ -109,12 +193,103 @@ public class SampleTeleOp extends LinearOpMode
         }
 
 
+        //Arm mover motor
+        if (gamepad2.dpad_up) {
+            arm.setPower(.3);
+        } else if (gamepad2.dpad_down){
+            arm.setPower(-.3);
+        } else {
+            arm.setPower(0);
+        }
+
+        //Wobble goal grabber
+        switch (wobble_stroker) {
+            case 0:
+                if(gamepad2.x){
+                    wobble_grabber.setPosition(1);
+                    sleep(200);
+                    wobble_stroker ++;
+                    break;
+                }
+            case 1:
+                if (gamepad2.x){
+                    wobble_grabber.setPosition(0);
+                    sleep(200);
+                    wobble_stroker = 0;
+                    break;
+                }
+        }
+
+
+        /**
+         GAMEPAD2
+         */
+
+
+        //I commented this out because I think there is problems with the motors/servos when they are used in two controllers
+
+
+//        if (gamepad2.right_trigger > 0){   //Intake Forwards
+//            intake.setPower(.8);
+//        } else if (gamepad2.left_trigger > 0){    //Intake backwards
+//            intake.setPower(-.8);
+//        } else {
+//            intake.setPower(0);
+//        }
+//
+//
+//        //flywheel
+//        if (gamepad2.right_bumper) {
+//            flyWheel.setPower(-1);
+//        }
+//        else {
+//            flyWheel.setPower(0);
+//        }
+//
+//
+//        //fire selector
+//        switch (fire_state) {
+//            case 0:
+//                if(gamepad2.a){
+//                    fireSelector.setPosition(0);
+//                    //manual case mover thing
+//
+//                    sleep (200);
+//                    fire_state = 1;
+//                    break;
+//                }
+//            case 1:
+//                if (fireSelector.getPosition() == 0) {
+//                    fireSelector.setPosition(1);
+//                    sleep(200);
+//                    fire_state ++;
+//                    break;
+//                }
+//            case 2:
+//                if (fireSelector.getPosition() == 1) {
+//                    fire_state = 0;
+//                    break;
+//                }
+//        }
+
+
         telemetry.addData("H nutter", "yes");
         telemetry.addData("left_front_enc " , leftFront.getCurrentPosition());
         telemetry.addData("right_front_enc " , rightFront.getCurrentPosition());
         telemetry.addData("left_back_enc " , leftBack.getCurrentPosition());
         telemetry.addData("right_back_enc " , rightBack.getCurrentPosition());
         telemetry.addData("fire_state", fire_state);
+        telemetry.addData("right back power", rightBack.getPower());
+        telemetry.addData("right Front power", rightFront.getPower());
+        telemetry.addData("left back power", leftBack.getPower());
+        telemetry.addData("left front power", leftFront.getPower());
+        telemetry.addData("gp1 right stick y", gamepad1.right_stick_y);
+        telemetry.addData("gp1 right stick x", gamepad1.right_stick_x);
+        telemetry.addData("gp1 left stick y", gamepad1.left_stick_y);
+        telemetry.addData("gp1 left stick x", gamepad1.left_stick_x);
+
+
+
 
         telemetry.update();
     }
