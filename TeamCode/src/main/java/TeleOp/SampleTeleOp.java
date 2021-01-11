@@ -70,6 +70,8 @@ public class SampleTeleOp extends LinearOpMode
                 stick_directon = 180 + Math.abs(stick_directon);
             } else if (gamepad1.left_stick_x > 0 && -gamepad1.left_stick_y < 0) {
                 stick_directon = 360 - Math.abs(stick_directon);
+            }  else if (gamepad1.left_stick_x > 0 && -gamepad1.left_stick_y > 0) {
+                stick_directon = Math.abs(stick_directon);
             } else {
                 stick_directon = stick_directon;
             }
@@ -109,6 +111,12 @@ public class SampleTeleOp extends LinearOpMode
                 rightFront.setPower(speed);
                 rightBack.setPower(-speed);
                 drivingState = "4th Region";
+            } else if ((gamepad1.left_stick_y >= 0 && gamepad1.left_stick_y < .001) && gamepad1.left_stick_x > 0) {
+                leftFront.setPower(-speed);
+                leftBack.setPower(speed);
+                rightFront.setPower(speed);
+                rightBack.setPower(-speed);
+                drivingState = "4th Region";
             }
             //5 position -y, -x   /
             else if ((stick_directon > 202.5) && (stick_directon <= 247.5)) {
@@ -125,6 +133,12 @@ public class SampleTeleOp extends LinearOpMode
                 rightFront.setPower(-speed);
                 rightBack.setPower(-speed);
                 drivingState = "6th Region";
+            } else if ((gamepad1.left_stick_x >= 0 && gamepad1.left_stick_x < .001) && gamepad1.left_stick_y > 0) {
+                leftFront.setPower(-speed);
+                leftBack.setPower(-speed);
+                rightFront.setPower(-speed);
+                rightBack.setPower(-speed);
+                drivingState = "6th Region";
             }
             //7 position +x, -y   \
             else if ((stick_directon > 292.5) && (stick_directon <= 337.5)) {
@@ -135,7 +149,7 @@ public class SampleTeleOp extends LinearOpMode
                 drivingState = "7th Region";
             }
             //8 position ––> (strafing)
-            else if ((stick_directon > 337.5) && (stick_directon <= 22.5)) {
+            else if ((gamepad1.left_stick_x > 0 && (gamepad1.left_stick_y <.5 || gamepad1.left_stick_y > -.5))) {
                 leftFront.setPower(speed);
                 leftBack.setPower(-speed);
                 rightFront.setPower(-speed);
@@ -143,7 +157,9 @@ public class SampleTeleOp extends LinearOpMode
                 drivingState = "8th Region";
             }
           else { setPowers(0, 0, 0, 0);}
-            //Turning
+
+
+          //Turning
             if (gamepad1.right_stick_x > 0) {
                 rightFront.setPower(.4);
                 leftFront.setPower(-.4);
