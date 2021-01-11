@@ -24,15 +24,23 @@ public class SampleTeleOp extends LinearOpMode
     private Servo wobble_grabber;
     private int fire_state = 0;
     private int wobble_stroker = 0;
+    String drivingState = "";
 
-//    private double theta = 22.5;
-//    private double delta = 45;
-//    private double speed = Math.sqrt(gamepad1.left_stick_x + gamepad1.left_stick_y);
-//    private double stick_directon = Math.sin(gamepad1.left_stick_y / speed);
+    private double theta = 22.5;
+    private double delta = 45;
+    private double speed = 0;
+    private double stick_directon = 0;
+
+
+    private void setPowers (double leftFrontSpd, double leftBackSpd, double rightFrontSpd, double rightBackSpd) {
+        leftFront.setPower(leftFrontSpd);
+        leftBack.setPower(leftBackSpd);
+        rightFront.setPower(rightFrontSpd);
+        rightBack.setPower(rightBackSpd);
+}
+
     @Override
     public void runOpMode() {
-
-
         rightFront = hardwareMap.dcMotor.get("right_front");
         leftFront = hardwareMap.dcMotor.get("left_front");
         rightBack = hardwareMap.dcMotor.get("right_back");
@@ -49,103 +57,111 @@ public class SampleTeleOp extends LinearOpMode
 
     while (opModeIsActive()) {
 
-        if (gamepad1.right_stick_x == 0) {
-            //Strifing with the left stick
-            rightFront.setPower(-gamepad1.left_stick_x);
-            leftFront.setPower(gamepad1.left_stick_x);
-            rightBack.setPower(gamepad1.left_stick_x);
-            leftBack.setPower(-gamepad1.left_stick_x);
 
-            //forward and backwards with left stick
-            rightFront.setPower(-gamepad1.left_stick_y);
-            leftFront.setPower(-gamepad1.left_stick_y);
-            rightBack.setPower(-gamepad1.left_stick_y);
-            leftBack.setPower(-gamepad1.left_stick_y);
-        } else {
+        drivingState = "";
+
+        if (gamepad1.right_stick_x == 0) {
+            speed = Math.sqrt(Math.pow(gamepad1.left_stick_x, 2) + Math.pow(-gamepad1.left_stick_y, 2));
+            stick_directon = Math.toDegrees(Math.asin(-gamepad1.left_stick_y / speed));
+
+            if (gamepad1.left_stick_x < 0 && -gamepad1.left_stick_y > 0) {
+                stick_directon = 180 - Math.abs(stick_directon);
+            } else if (gamepad1.left_stick_x < 0 && -gamepad1.left_stick_y < 0) {
+                stick_directon = 180 + Math.abs(stick_directon);
+            } else if (gamepad1.left_stick_x > 0 && -gamepad1.left_stick_y < 0) {
+                stick_directon = 360 - Math.abs(stick_directon);
+            } else {
+                stick_directon = stick_directon;
+            }
+
+            //1 direction, +x, +y 1st  /
+            //if ((stick_directon <= (theta + delta)) && (stick_directon >= (theta + .01))) { //  22.51 < sd < 67.5;
+            if ((stick_directon > 22.5) && (stick_directon <= 67.5)) {
+                leftFront.setPower(speed);
+                leftBack.setPower(0);  //for the diagonal upward 45 degree
+                rightFront.setPower(0);
+                rightBack.setPower(speed);
+                drivingState = "1st region";
+            }
+
+            // 2 position +y |
+            //else if ((stick_directon <= (theta + (delta * 2))) && (stick_directon >= (theta + delta + .01))) {
+            else if ((stick_directon > 67.5) && (stick_directon <= 112.5)) {
+                leftFront.setPower(speed);
+                leftBack.setPower(speed);
+                rightFront.setPower(speed);
+                rightBack.setPower(speed);
+                drivingState = "2nd Region";
+            }
+
+            //3 position -x, +y  \
+            else if ((stick_directon > 112.5) && (stick_directon <= 157.5)) {
+                leftFront.setPower(0);
+                leftBack.setPower(speed);
+                rightFront.setPower(speed);
+                rightBack.setPower(0);
+                drivingState = "3rd Region";
+            }
+            //4 position -x (straifing)  <––
+            else if ((stick_directon > 157.5) && (stick_directon <= 202.5)) {
+                leftFront.setPower(-speed);
+                leftBack.setPower(speed);
+                rightFront.setPower(speed);
+                rightBack.setPower(-speed);
+                drivingState = "4th Region";
+            }
+            //5 position -y, -x   /
+            else if ((stick_directon > 202.5) && (stick_directon <= 247.5)) {
+                leftFront.setPower(-speed);
+                leftBack.setPower(0);
+                rightFront.setPower(0);
+                rightBack.setPower(-speed);
+                drivingState = "5th Region";
+            }
+            // 6 position -y  |
+            else if ((stick_directon > 247.5) && (stick_directon <= 292.5)) {
+                leftFront.setPower(-speed);
+                leftBack.setPower(-speed);
+                rightFront.setPower(-speed);
+                rightBack.setPower(-speed);
+                drivingState = "6th Region";
+            }
+            //7 position +x, -y   \
+            else if ((stick_directon > 292.5) && (stick_directon <= 337.5)) {
+                leftFront.setPower(0);
+                leftBack.setPower(-speed);
+                rightFront.setPower(-speed);
+                rightBack.setPower(0);
+                drivingState = "7th Region";
+            }
+            //8 position ––> (strafing)
+            else if ((stick_directon > 337.5) && (stick_directon <= 22.5)) {
+                leftFront.setPower(speed);
+                leftBack.setPower(-speed);
+                rightFront.setPower(-speed);
+                rightBack.setPower(speed);
+                drivingState = "8th Region";
+            }
+          else { setPowers(0, 0, 0, 0);}
             //Turning
-            if (gamepad1.right_stick_x > .0) {
+            if (gamepad1.right_stick_x > 0) {
                 rightFront.setPower(.4);
                 leftFront.setPower(-.4);
                 rightBack.setPower(.4);
                 leftBack.setPower(-.4);
-            } else if (-gamepad1.right_stick_x > .0) {
+            } else if (-gamepad1.right_stick_x > 0) {
                 rightFront.setPower(-.4);
                 leftFront.setPower(.4);
                 rightBack.setPower(-.4);
                 leftBack.setPower(.4);
             }
+            else {
+                leftBack.setPower(0);
+                leftFront.setPower(0);
+                rightBack.setPower(0);
+                rightFront.setPower(0);
+            }
         }
-
-
-//            //1 direction, +x, +y 8th  /
-//          if (stick_directon <= theta + delta || stick_directon >= theta + .01) {
-//              leftFront.setPower(speed);
-//              leftBack.setPower(0);  //for the diagonal upward 45 degree
-//              rightFront.setPower(0);
-//              rightBack.setPower(speed);
-//          }
-//          // 2 position +y |
-//          else if (stick_directon <= theta + delta * 2 || stick_directon >= theta + delta + .01) {
-//            leftFront.setPower(speed);
-//            leftBack.setPower(speed);
-//            rightFront.setPower(speed);
-//            rightBack.setPower(speed);
-//          }
-//          //3 position -x, +y  \
-//          else if (stick_directon <= theta + delta * 3 || stick_directon >= theta + (delta * 2) + .01) {
-//              leftFront.setPower(0);
-//              leftBack.setPower(speed);
-//              rightFront.setPower(speed);
-//              rightBack.setPower(0);
-//          }
-//          //4 position -x (straifing)  <––
-//          else if
-//            (stick_directon <= theta + delta * 4  || stick_directon >= theta + (delta * 3) + .01) {
-//            leftFront.setPower(-speed);
-//            leftBack.setPower(speed);
-//            rightFront.setPower(speed);
-//            rightBack.setPower(-speed);
-//        }
-//          //5 position -y, -x   /
-//          else if
-//          (stick_directon <= theta + delta * 5 || stick_directon >= theta + (delta * 4) + .01) {
-//              leftFront.setPower(-speed);
-//              leftBack.setPower(0);
-//              rightFront.setPower(0);
-//              rightBack.setPower(-speed);
-//          }
-//          // 6 position -y  |
-//          else if
-//          (stick_directon <= theta + delta * 6 || stick_directon >= theta + (delta * 5) + .01) {
-//              leftFront.setPower(-speed);
-//              leftBack.setPower(-speed);
-//              rightFront.setPower(-speed);
-//              rightBack.setPower(-speed);
-//          }
-//          //7 position +x, -y   \
-//          else if
-//          (stick_directon <= theta + delta * 7 || stick_directon >= theta + (delta * 6) + .01) {
-//              leftFront.setPower(0);
-//              leftBack.setPower(-speed);
-//              rightFront.setPower(-speed);
-//              rightBack.setPower(0);
-//          }
-//          //8 position ––> (strafing)
-//          else if
-//          (stick_directon <= theta + delta * 8 || stick_directon >= theta + (delta * 7) + .01) {
-//              leftFront.setPower(speed);
-//              leftBack.setPower(-speed);
-//              rightFront.setPower(-speed);
-//              rightBack.setPower(speed);
-//          } else {
-//              rightBack.setPower(0);
-//              rightFront.setPower(0);
-//              leftBack.setPower(0);
-//              leftFront.setPower(0);
-//          }
-
-
-
 
         if (gamepad2.right_trigger > 0){   //Intake Forwards
             intake.setPower(.8);
@@ -287,9 +303,9 @@ public class SampleTeleOp extends LinearOpMode
         telemetry.addData("gp1 right stick x", gamepad1.right_stick_x);
         telemetry.addData("gp1 left stick y", gamepad1.left_stick_y);
         telemetry.addData("gp1 left stick x", gamepad1.left_stick_x);
-
-
-
+        telemetry.addData("driving State", drivingState);
+        telemetry.addData("computed spd", speed);
+        telemetry.addData("stick_direction", stick_directon);
 
         telemetry.update();
     }
