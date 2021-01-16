@@ -14,6 +14,10 @@ import org.firstinspires.ftc.teamcode.util.Encoder;
 public class   SampleTeleOp extends LinearOpMode
 {
 
+
+    //192.168.43.1
+
+
     private DcMotor rightFront;
     private DcMotor leftFront;
     private DcMotor rightBack;
@@ -23,10 +27,12 @@ public class   SampleTeleOp extends LinearOpMode
     private Servo fireSelector;
     private DcMotor arm;
     private DcMotor arm2;
+    private Servo intake_aid;
     private Servo wobble_grabber;
     public ElapsedTime clawruntime = new ElapsedTime();
     private int fire_state = 0;
     private int claw_state = 0;
+    private int intake_state = 0;
 
     String drivingState = "";
 
@@ -59,6 +65,7 @@ public class   SampleTeleOp extends LinearOpMode
         intake = hardwareMap.dcMotor.get("intake");
         flyWheel = hardwareMap.dcMotor.get("fly_wheel");
         fireSelector = hardwareMap.servo.get("fire_selector");
+        intake_aid = hardwareMap.servo.get("intake_aid");
         arm = hardwareMap.dcMotor.get("arm");
         arm2 = hardwareMap.dcMotor.get("arm2");
         wobble_grabber = hardwareMap.servo.get("wobble_grabber");
@@ -227,14 +234,14 @@ public class   SampleTeleOp extends LinearOpMode
                     fireSelector.setPosition(0);
                     //manual case mover thing
 
-                    sleep (200);
+                    sleep (300);
                     fire_state = 1;
                     break;
                 }
             case 1:
                 if (fireSelector.getPosition() == 0) {
                     fireSelector.setPosition(1);
-                    sleep(200);
+                    sleep(300);
                     fire_state ++;
                     break;
                 }
@@ -278,6 +285,31 @@ public class   SampleTeleOp extends LinearOpMode
                 }
                 break;
         }
+
+        //intake helper
+        switch (intake_state) {
+            case 0:
+                if(gamepad2.b){
+                    intake_aid.setPosition(0);
+                    //manual case mover thing
+                    sleep (300);
+                    intake_state = 1;
+                    break;
+                }
+            case 1:
+                if (intake_aid.getPosition() == 0) {
+                    intake_aid.setPosition(.6);
+                    sleep(300);
+                    intake_state ++;
+                    break;
+                }
+            case 2:
+                if (intake_aid.getPosition() == .6) {
+                    intake_state = 0;
+                    break;
+                }
+        }
+
 
 
         /**
@@ -339,6 +371,7 @@ public class   SampleTeleOp extends LinearOpMode
         telemetry.addData("right_back_enc " , rightBack.getCurrentPosition());
         telemetry.addData("fire_state", fire_state);
         telemetry.addData("claw_state", claw_state);
+        telemetry.addData("intake_state", intake_state);
         telemetry.addData("right back power", rightBack.getPower());
         telemetry.addData("right Front power", rightFront.getPower());
         telemetry.addData("left back power", leftBack.getPower());

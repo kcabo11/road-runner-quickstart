@@ -32,8 +32,10 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.util.DashboardUtil;
 import org.firstinspires.ftc.teamcode.util.LynxModuleUtil;
@@ -94,7 +96,22 @@ SampleMecanumDrive extends MecanumDrive {
 
     private LinkedList<Pose2d> poseHistory;
 
-    private DcMotorEx leftBack, leftFront, rightFront, rightBack;
+    private DcMotor rightFront;
+    private DcMotor leftFront;
+    private DcMotor rightBack;
+    private DcMotor leftBack;
+    private DcMotor intake;
+    private DcMotor flyWheel;
+    private Servo fireSelector;
+    private DcMotor arm;
+    private DcMotor arm2;
+    private Servo wobble_grabber;
+    public ElapsedTime clawruntime = new ElapsedTime();
+    private int fire_state = 0;
+    private int claw_state = 0;
+
+    String drivingState = "";
+
     private List<DcMotorEx> motors;
     private BNO055IMU imu;
 
@@ -148,7 +165,20 @@ SampleMecanumDrive extends MecanumDrive {
         rightBack = hardwareMap.get(DcMotorEx.class, "right_back");
         rightFront = hardwareMap.get(DcMotorEx.class, "right_front");
 
-        motors = Arrays.asList(leftFront, leftBack, rightBack, rightFront);
+        rightFront = hardwareMap.dcMotor.get("right_front");
+        leftFront = hardwareMap.dcMotor.get("left_front");
+        rightBack = hardwareMap.dcMotor.get("right_back");
+        leftBack = hardwareMap.dcMotor.get("left_back");
+        intake = hardwareMap.dcMotor.get("intake");
+        flyWheel = hardwareMap.dcMotor.get("fly_wheel");
+        fireSelector = hardwareMap.servo.get("fire_selector");
+        arm = hardwareMap.dcMotor.get("arm");
+        arm2 = hardwareMap.dcMotor.get("arm2");
+        wobble_grabber = hardwareMap.servo.get("wobble_grabber");
+
+        rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        arm2.setDirection(DcMotorSimple.Direction.REVERSE);
 
         for (DcMotorEx motor : motors) {
             MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
