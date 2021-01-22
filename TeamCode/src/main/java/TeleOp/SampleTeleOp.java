@@ -14,10 +14,6 @@ import org.firstinspires.ftc.teamcode.util.Encoder;
 public class   SampleTeleOp extends LinearOpMode
 {
 
-
-    //192.168.43.1
-
-
     private DcMotor rightFront;
     private DcMotor leftFront;
     private DcMotor rightBack;
@@ -104,6 +100,9 @@ public class   SampleTeleOp extends LinearOpMode
             leftBack.setPower(v3);
             rightBack.setPower(v4);
         }
+
+
+// old left stick that was made by katie and josh, has problems
 //        if (gamepad1.right_stick_x == 0) {
 //            speed = Math.sqrt(Math.pow(gamepad1.left_stick_x, 2) + Math.pow(-gamepad1.left_stick_y, 2));
 //            stick_directon = Math.toDegrees(Math.asin(-gamepad1.left_stick_y / speed));
@@ -206,6 +205,12 @@ public class   SampleTeleOp extends LinearOpMode
 //                rightFront.setPower(0);
 //            }
 //        }
+
+
+
+       /**
+       GMAEPAD 2:
+        */
 
         if (gamepad2.right_trigger > 0){   //Intake Forwards
             intake.setPower(.8);
@@ -312,57 +317,6 @@ public class   SampleTeleOp extends LinearOpMode
 
 
 
-        /**
-         GAMEPAD2
-         */
-
-
-        //I commented this out because I think there is problems with the motors/servos when they are used in two controllers
-
-
-//        if (gamepad2.right_trigger > 0){   //Intake Forwards
-//            intake.setPower(.8);
-//        } else if (gamepad2.left_trigger > 0){    //Intake backwards
-//            intake.setPower(-.8);
-//        } else {
-//            intake.setPower(0);
-//        }
-//
-//
-//        //flywheel
-//        if (gamepad2.right_bumper) {
-//            flyWheel.setPower(-1);
-//        }
-//        else {
-//            flyWheel.setPower(0);
-//        }
-//
-//
-//        //fire selector
-//        switch (fire_state) {
-//            case 0:
-//                if(gamepad2.a){
-//                    fireSelector.setPosition(0);
-//                    //manual case mover thing
-//
-//                    sleep (200);
-//                    fire_state = 1;
-//                    break;
-//                }
-//            case 1:
-//                if (fireSelector.getPosition() == 0) {
-//                    fireSelector.setPosition(1);
-//                    sleep(200);
-//                    fire_state ++;
-//                    break;
-//                }
-//            case 2:
-//                if (fireSelector.getPosition() == 1) {
-//                    fire_state = 0;
-//                    break;
-//                }
-//        }
-
 
         telemetry.addData("H nutter", "yes");
         telemetry.addData("left_front_enc " , leftFront.getCurrentPosition());
@@ -389,3 +343,5 @@ public class   SampleTeleOp extends LinearOpMode
     }
     }
 }
+
+//192.168.43.1
