@@ -70,6 +70,17 @@ public class RedMainAuto extends LinearOpMode {
 //         targetzonepath[1] = new Vector2d (84,24);//-60
 //         targetzonepath[2] = new Vector2d (107,0);//-60
 
+        wobbleDrop = new Vector2d(84, 24);
+        grabWobbleGoal = new Vector2d(30, 14);
+        clawGrabWobble = new Vector2d(24, 32);
+        toRight = new Vector2d(36, 54);
+        secondPlacement = new Vector2d(96, 35);
+        onLine = new Vector2d(72, -2);
+
+        shootRings = (new Vector2d(60, 48));
+        turning = (new Vector2d(61, 48));
+
+        /** 4 Ring Configuration
         shootRings = (new Vector2d(60, 48));
         turning = (new Vector2d(61, 48));
         wobbleDrop = new Vector2d(107, -3);
@@ -79,6 +90,7 @@ public class RedMainAuto extends LinearOpMode {
         toRight = new Vector2d(12, 0);
         secondPlacement = new Vector2d(109, -2);
         onLine = new Vector2d(72, -2);
+         **/
 
     }
 
@@ -99,11 +111,32 @@ public class RedMainAuto extends LinearOpMode {
 //            Trajectory targetZoneDelivery = new TrajectoryBuilder()
 //                    .lineTo(targetzonepath[n])
 //                    .build();
-//
-//            grabSecondWG = new TrajectoryBuilder(targetZoneDelivery.end(),)
-//                    .splineTo(grabWobbleGoal,180)
-//                    .build();
+        myTrajectory = robot.trajectoryBuilder(new Pose2d(0, 0, 0))
+                .lineTo(wobbleDrop)
+                .build();
+//        toShootRings = robot.trajectoryBuilder(new Pose2d(84, 24,0))
+//                .lineTo(toRight)
+//                .build();
+        toShootRings = robot.trajectoryBuilder(new Pose2d(84, 24, 0)) //Pose2d(84,24))
+                .splineToConstantHeading(grabWobbleGoal, 0)
+                .build();
+        grabSecondWG = robot.trajectoryBuilder(new Pose2d(30, 14, 0)) //Pose2d(84,24))
+                .splineTo(clawGrabWobble, 90)
+                .build();
+//        grabbingWG = robot.trajectoryBuilder(new Pose2d(24, 35, 90))
+//                .lineToConstantHeading(tuningToGrab)
+//                .build();
+        beforeDelivery = robot.trajectoryBuilder(new Pose2d(24, 35,90))
+                .lineTo(toRight)
+                .build();
+        secondDelivery = robot.trajectoryBuilder(new Pose2d(36,48, 90))
+                .splineTo(secondPlacement, 0)
+                .build();
+        park = robot.trajectoryBuilder(new Pose2d(84,24, 0))
+                .back(10)
+                .build();
 
+        /** 4 Ring Configuration
         myTrajectory = robot.trajectoryBuilder(new Pose2d(0, 0, 0))
                 .lineTo(wobbleDrop)
                 .build();
@@ -125,6 +158,7 @@ public class RedMainAuto extends LinearOpMode {
         park = robot.trajectoryBuilder(new Pose2d(109, -2, 0))
                 .back(30)
                 .build();
+         **/
 //        test = new QuinticSpline(new QuinticSpline(0,0,0,0));
 
 
@@ -174,7 +208,19 @@ public class RedMainAuto extends LinearOpMode {
         generatePath(RingConfig);
 
         robot.followTrajectory(myTrajectory);
-//        while (robot.followTrajectory(myTrajectory) = robot.isBusy())
+        clawBack(robot);
+        robot.followTrajectory(toShootRings);
+        clawGrabWobble(robot);
+        robot.followTrajectory(grabSecondWG);
+//        robot.followTrajectory(grabbingWG);
+        liftWobble(robot);
+        robot.followTrajectory(beforeDelivery);
+        robot.followTrajectory(secondDelivery);
+        justClawDownOpen(robot);
+        robot.followTrajectory(park);
+
+        /** 4 Ring Configuration
+        robot.followTrajectory(myTrajectory);
         clawBack(robot);
         robot.followTrajectory(toShootRings);
         clawGrabWobble(robot);
@@ -185,6 +231,7 @@ public class RedMainAuto extends LinearOpMode {
         robot.followTrajectory(secondDelivery);
         justClawDownOpen(robot);
         robot.followTrajectory(park);
+         **/
     }
 
     private void clawBack(SampleMecanumDrive robot) {
