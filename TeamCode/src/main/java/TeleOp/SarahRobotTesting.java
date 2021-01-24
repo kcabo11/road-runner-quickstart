@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-
+@Disabled
 @TeleOp(name = "Sarahs Program", group = "Tutorials")
 public class SarahRobotTesting extends LinearOpMode
 {

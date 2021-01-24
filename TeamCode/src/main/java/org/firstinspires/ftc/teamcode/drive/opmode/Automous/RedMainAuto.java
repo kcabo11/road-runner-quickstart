@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.drive.opmode.Automous;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.path.QuinticSpline;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 
@@ -28,9 +29,6 @@ import Sample.SampleMecanumDrive;
 public class RedMainAuto extends LinearOpMode {
     static SampleMecanumDrive robot;
     LibraryOpenCV opencv;
-    //Telemetry telemetry;
-    //HardwareMap hardwareMap;
-//    static LibraryTranslatePos translatePos;
     String RingConfig;
     public ElapsedTime launcherTime = new ElapsedTime();
 
@@ -46,33 +44,41 @@ public class RedMainAuto extends LinearOpMode {
     private DcMotor arm2;
     private Servo wobble_grabber;
 
-    static Pose2d startingpos;
-    static Pose2d myPos;
-    static Pose2d myPose;
-    static Vector2d wobbleDrop;
-
     static Trajectory targetZoneDelivery;
     static Trajectory grabSecondWG;
+    static Trajectory grabbingWG;
     static Trajectory myTrajectory;
     static Trajectory toShootRings;
+    static Trajectory beforeDelivery;
+    static Trajectory secondDelivery;
+    static Trajectory shootToGoal;
+    static Trajectory park;
+    static QuinticSpline test;
     //    static Vector2d[] targetzonepath  = new Vector2d[3];
     static Vector2d grabWobbleGoal;
     static Vector2d shootRings;
     static Vector2d turning;
     static Vector2d clawGrabWobble;
-
+    static Vector2d secondPlacement;
+    static Vector2d wobbleDrop;
+    static Vector2d toRight;
+    static Vector2d onLine;
+    static Vector2d tuningToGrab;
     public static void generatePlotPoints() {
 
-//         targetzonepath[0] = new Vector2d (60,0);//-60
+//         targetzonepath[0] = new Vector2d (59, 0);//-60
 //         targetzonepath[1] = new Vector2d (84,24);//-60
-//         targetzonepath[2] = new Vector2d (110,0);//-60
+//         targetzonepath[2] = new Vector2d (107,0);//-60
 
-        Pose2d myPose = new Pose2d(10, -5, Math.toRadians(90));
         shootRings = (new Vector2d(60, 48));
         turning = (new Vector2d(61, 48));
-        wobbleDrop = new Vector2d(107, 0);
-        grabWobbleGoal = new Vector2d(30, 20);
-        clawGrabWobble = new Vector2d(30, 34);
+        wobbleDrop = new Vector2d(107, -3);
+        grabWobbleGoal = new Vector2d(30, 16);
+        clawGrabWobble = new Vector2d(24, 35);
+        tuningToGrab = new Vector2d(25, 36);
+        toRight = new Vector2d(12, 0);
+        secondPlacement = new Vector2d(109, -2);
+        onLine = new Vector2d(72, -2);
 
     }
 
@@ -100,14 +106,27 @@ public class RedMainAuto extends LinearOpMode {
 
         myTrajectory = robot.trajectoryBuilder(new Pose2d(0, 0, 0))
                 .lineTo(wobbleDrop)
-                //.lineTo(new Vector2d(84,24))
                 .build();
         toShootRings = robot.trajectoryBuilder(new Pose2d(107, 0, 0)) //Pose2d(84,24))
                 .splineToConstantHeading(grabWobbleGoal, 0)
                 .build();
-        grabSecondWG = robot.trajectoryBuilder(new Pose2d(30, 20, 0)) //Pose2d(84,24))
+        grabSecondWG = robot.trajectoryBuilder(new Pose2d(30, 16, 0)) //Pose2d(84,24))
                 .splineTo(clawGrabWobble, 90)
                 .build();
+        grabbingWG = robot.trajectoryBuilder(new Pose2d(24, 35, 90))
+                .lineToConstantHeading(tuningToGrab)
+                .build();
+        beforeDelivery = robot.trajectoryBuilder(new Pose2d(24, 35,90))
+                .lineTo(toRight)
+                .build();
+        secondDelivery = robot.trajectoryBuilder(new Pose2d(12, 0, 90))
+                .splineTo(secondPlacement, 0)
+                .build();
+        park = robot.trajectoryBuilder(new Pose2d(109, -2, 0))
+                .back(30)
+                .build();
+//        test = new QuinticSpline(new QuinticSpline(0,0,0,0));
+
 
 //            Trajectory myTrajectory = robot.trajectoryBuilder(new Pose2d(1,0,0)).strafeRight(10).forward(5).build();
 
@@ -146,6 +165,7 @@ public class RedMainAuto extends LinearOpMode {
             telemetry.update();
         }
         opencv.shutDownOpenCV();
+        wobble_grabber.setPosition(-1);
         waitForStart();
 
         telemetry.addData("RunOpMode", "");
@@ -153,55 +173,68 @@ public class RedMainAuto extends LinearOpMode {
 
         generatePath(RingConfig);
 
-        wobble_grabber.setPosition(-1);
         robot.followTrajectory(myTrajectory);
+//        while (robot.followTrajectory(myTrajectory) = robot.isBusy())
         clawBack(robot);
         robot.followTrajectory(toShootRings);
         clawGrabWobble(robot);
         robot.followTrajectory(grabSecondWG);
+        robot.followTrajectory(grabbingWG);
         liftWobble(robot);
-        //robot.followTrajectory(myTrajectory);
-        //launchRings(robot);
+        robot.followTrajectory(beforeDelivery);
+        robot.followTrajectory(secondDelivery);
+        justClawDownOpen(robot);
+        robot.followTrajectory(park);
     }
 
     private void clawBack(SampleMecanumDrive robot) {
         arm.setPower(-.8);
         arm2.setPower(-.8);
-        sleep(400);
+        sleep(300);
         arm.setPower(0);
         arm2.setPower(0);
         sleep(250);
         wobble_grabber.setPosition(1);
-        sleep(500);
+        sleep(200);
         arm.setPower(.8);
         arm2.setPower(.8);
-        sleep(500);
+        sleep(400);
         arm.setPower(0);
         arm2.setPower(0);
     }
+    private void justClawDownOpen(SampleMecanumDrive robot){
+        wobble_grabber.setPosition(1);
+        sleep(200);
+        arm.setPower(.8);
+        arm2.setPower(.8);
+        sleep(400);
+        arm.setPower(0);
+        arm2.setPower(0);
+    }
+//    private void justClawUp
 
     private void clawGrabWobble(SampleMecanumDrive robot){
         arm.setPower(-.4);
         arm2.setPower(-.4);
-        sleep(650);
+        sleep(600);
         arm.setPower(0);
         arm2.setPower(0);
 
     }
     private void liftWobble(SampleMecanumDrive robot){
         wobble_grabber.setPosition(-1);
-        sleep(300);
-        arm.setPower(.5);
-        arm2.setPower(.5);
-        sleep(500);
-        arm.setPower(0);
-        arm2.setPower(0);
+//        sleep(300);
+//        arm.setPower(.5);
+//        arm2.setPower(.5);
+//        sleep(500);
+//        arm.setPower(0);
+//        arm2.setPower(0);
     }
 
     private void launchRings(SampleMecanumDrive robot) {
         flyWheel.setPower(-1);
         launcherTime.reset();
-        while (launcherTime.seconds() <= 5) {
+        while (launcherTime.seconds() <= 4) {
             fireSelector.setPosition(1);
             sleep(500);
             fireSelector.setPosition(-1);

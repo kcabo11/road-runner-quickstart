@@ -20,6 +20,7 @@ import org.openftc.easyopencv.OpenCvInternalCamera;
 import org.openftc.easyopencv.OpenCvPipeline;
 //    @Disabled
     @TeleOp
+    @Disabled
     public class SampleOpenCV extends LinearOpMode
     {
         static SampleMecanumDrive robot;
@@ -37,8 +38,12 @@ import org.openftc.easyopencv.OpenCvPipeline;
 
             while (opModeIsActive())
             {
-                telemetry.addData("Position", openCV.currentRingPos());
-                telemetry.update();
+
+                openCV.findRingConfig();
+//
+//                telemetry.addData("Position", openCV.currentRingPos());
+//                telemetry.addData("avg", openCV.pipe);
+//                telemetry.update();
 
                 // Don't burn CPU cycles busy-looping in this sample
                 sleep(50);

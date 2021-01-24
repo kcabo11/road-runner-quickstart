@@ -83,7 +83,7 @@ public class LibraryOpenCV {
 
                 @Override
                 public void onOpened() {
-                    webcam.startStreaming(320, 240, OpenCvCameraRotation.SIDEWAYS_LEFT);
+                    webcam.startStreaming(640, 480, OpenCvCameraRotation.SIDEWAYS_LEFT);
                 }
             });
         }
@@ -132,7 +132,7 @@ public class LibraryOpenCV {
             Mat region1_Cb;
             Mat YCrCb = new Mat();
             Mat Cb = new Mat();
-            int avg1;
+            public int avg1;
 
             // Volatile since accessed by OpMode thread w/o synchronization
             private volatile RingPosition position = RingPosition.FOUR;
@@ -157,16 +157,14 @@ public class LibraryOpenCV {
                 timer.reset();
                 inputToCb(input);
 
+                avg1 = (int) Core.mean(region1_Cb).val[0];
+
                 Imgproc.rectangle(
                         input, // Buffer to draw on
                         region1_pointA, // First point which defines the rectangle
                         region1_pointB, // Second point which defines the rectangle
                         BLUE, // The color the rectangle is drawn in
                         2); // Thickness of the rectangle lines
-
-
-                avg1 = (int) Core.mean(region1_Cb).val[0];
-
 
                 if (avg1 > FOUR_RING_THRESHOLD) {
                     position = RingPosition.FOUR;

@@ -77,7 +77,7 @@ public class   SampleTeleOp extends LinearOpMode
         drivingState = "";
 
         double r = Math.hypot(-gamepad1.left_stick_x, gamepad1.left_stick_y);
-        double robotAngle = Math.atan2(gamepad1.left_stick_y, -gamepad1.left_stick_x) - Math.PI / 4;
+        double robotAngle = Math.atan2(-gamepad1.left_stick_y, gamepad1.left_stick_x) - Math.PI / 4;
         double rightX = -gamepad1.right_stick_x;
 // When the direction value is reversed this if statement inverts the addition and subtraction for turning.
 // Default mode: The robot starts with the scaleTurningSpeed set to 1, scaleFactor set to 1, and direction set to forward.
@@ -101,6 +101,17 @@ public class   SampleTeleOp extends LinearOpMode
             rightBack.setPower(v4);
         }
 
+        if (gamepad1.dpad_left) {
+            rightFront.setPower(-.4);
+            rightBack.setPower(-.4);
+            leftFront.setPower(.4);
+            leftBack.setPower(.4);
+        } else if (gamepad1.dpad_right) {
+            rightFront.setPower(.4);
+            rightBack.setPower(.4);
+            leftFront.setPower(-.4);
+            leftBack.setPower(-.4);
+        }
 
 // old left stick that was made by katie and josh, has problems
 //        if (gamepad1.right_stick_x == 0) {
@@ -235,7 +246,7 @@ public class   SampleTeleOp extends LinearOpMode
         //fire selector
         switch (fire_state) {
             case 0:
-                if(gamepad2.a){
+                if(gamepad2.a && gamepad2.right_bumper){
                     fireSelector.setPosition(0);
                     //manual case mover thing
 
@@ -260,11 +271,11 @@ public class   SampleTeleOp extends LinearOpMode
 
         //Arm mover motor
         if (gamepad2.dpad_up) {
-            arm.setPower(.3);
-            arm2.setPower(.3);
+            arm.setPower(.5);
+            arm2.setPower(.5);
         } else if (gamepad2.dpad_down){
-            arm.setPower(-.3);
-            arm2.setPower(-.3);
+            arm.setPower(-.5);
+            arm2.setPower(-.5);
         } else {
             arm.setPower(0);
             arm2.setPower(0);
