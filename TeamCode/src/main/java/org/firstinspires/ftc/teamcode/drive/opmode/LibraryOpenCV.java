@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.drive.opmode;
 
 import android.annotation.SuppressLint;
 
+import Sample.OpenCV_Ring_Finder;
 import Sample.SampleMecanumDrive;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -74,17 +75,13 @@ public class LibraryOpenCV {
             pipeline = new UltimateGoalDeterminationPipeline();
 
             int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-            webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "webcam"), cameraMonitorViewId);
-            webcam.setPipeline(new UltimateGoalDeterminationPipeline());
-            //WebcamName OpenCVWebcam = hardwareMap.get(WebcamName.class, "webcam");
-            //OpenCvCamera camera = OpenCvCameraFactory.getInstance().createWebcam(OpenCVWebcam, cameraMonitorViewId);
-            // Specify the image processing you are using to receive feedback
-            webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+            webcam = OpenCvCameraFactory.getInstance().createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
+            webcam.setPipeline(pipeline);
 
-                @Override
-                public void onOpened() {
-                    webcam.startStreaming(640, 480, OpenCvCameraRotation.SIDEWAYS_LEFT);
-                }
+            webcam.setViewportRenderingPolicy(OpenCvCamera.ViewportRenderingPolicy.OPTIMIZE_VIEW);
+
+            webcam.openCameraDeviceAsync(() -> {
+                webcam.startStreaming(640, 480, OpenCvCameraRotation.SIDEWAYS_LEFT);
             });
         }
 
@@ -108,16 +105,13 @@ public class LibraryOpenCV {
             static final Scalar BLUE = new Scalar(0, 0, 255);
             static final Scalar GREEN = new Scalar(0, 255, 0);
 
-            /*
-             * The core values which define the location and size of the sample regions
-             */
-            static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(181, 98);
+        //Core Values: Defines location and size of sample regions
+        static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(175, 0);
+        static final int REGION_WIDTH = 60;
+        static final int REGION_HEIGHT = 85;
 
-            static final int REGION_WIDTH = 35;
-            static final int REGION_HEIGHT = 25;
-
-            final int FOUR_RING_THRESHOLD = 150;
-            final int ONE_RING_THRESHOLD = 135;
+        final int FOUR_RING_THRESHOLD = 149;
+        final int ONE_RING_THRESHOLD = 140;//135;
 
             Point region1_pointA = new Point(
                     REGION1_TOPLEFT_ANCHOR_POINT.x,
@@ -194,8 +188,6 @@ public class LibraryOpenCV {
 
         public String currentRingPos() {
             String currentConfig = "";
-            ElapsedTime timer = new ElapsedTime();
-            timer.reset();
 
             if (pipeline.position == UltimateGoalDeterminationPipeline.RingPosition.ONE) {
                 telemetry.addData("currentConfig = B, ONE", "");

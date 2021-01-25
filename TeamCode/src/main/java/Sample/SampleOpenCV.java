@@ -20,7 +20,7 @@ import org.openftc.easyopencv.OpenCvInternalCamera;
 import org.openftc.easyopencv.OpenCvPipeline;
 //    @Disabled
     @TeleOp
-    @Disabled
+//    @Disabled
     public class SampleOpenCV extends LinearOpMode
     {
         static SampleMecanumDrive robot;
