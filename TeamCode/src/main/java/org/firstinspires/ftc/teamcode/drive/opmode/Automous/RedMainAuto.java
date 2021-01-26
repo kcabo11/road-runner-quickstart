@@ -118,37 +118,40 @@ public class RedMainAuto extends LinearOpMode {
     static Vector2d onLineFOUR;
     static Vector2d tuningToGrabFOUR;
 
-    public static void generatePlotPoints() {
+    public static void generatePlotPointsNone() {
 
 //         targetzonepath[0] = new Vector2d (59, 0);//-60
 //         targetzonepath[1] = new Vector2d (84,24);//-60
 //         targetzonepath[2] = new Vector2d (107,0);//-60
 
         /** NO ring Config*/
-        wobbleDropNONE = new Vector2d(60, -3);
+        wobbleDropNONE = new Vector2d(65, -3);
         grabWobbleGoalNONE = new Vector2d(30, 14);
-        clawGrabWobbleNONE = new Vector2d(24, 32);
+        clawGrabWobbleNONE = new Vector2d(20, 31);
         toRightNONE = new Vector2d(12, -2);
         secondPlacementNONE = new Vector2d(60, -3);
-        ringPosNONE = new Vector2d(72,35);
-        onLineNONE = new Vector2d(60, -2);
+        ringPosNONE = new Vector2d(72, 35);
+        onLineNONE = new Vector2d(60, 34);
         shootRingsNONE = (new Vector2d(55, 36));
 //        turnToShootONE = (new Vector2d(58, 33));
         turningNONE = (new Vector2d(55, 48));
-
-        /** ONE Config */
-        wobbleDropONE = new Vector2d(84, 24);
-        grabWobbleGoalONE = new Vector2d(30, 10);
-        clawGrabWobbleONE = new Vector2d(24, 31);
-        toRightONE = new Vector2d(36, 54);
-        secondPlacementONE = new Vector2d(98, 35);
-        ringPosONE = new Vector2d(72,35);
-        onLineONE = new Vector2d(60, -2);
-        shootRingsONE = (new Vector2d(60, 36));
+    }
+        public static void generatePlotPointsOne() {
+            /** ONE Config */
+            wobbleDropONE = new Vector2d(84, 24);
+            grabWobbleGoalONE = new Vector2d(30, 10);
+            clawGrabWobbleONE = new Vector2d(20, 29);
+            toRightONE = new Vector2d(36, 54);
+            secondPlacementONE = new Vector2d(98, 33);
+            ringPosONE = new Vector2d(72, 35);
+            onLineONE = new Vector2d(60, 35);
+            shootRingsONE = (new Vector2d(60, 36));
 //        turnToShootONE = (new Vector2d(58, 33));
-        turningONE = (new Vector2d(60, 48));
+            turningONE = (new Vector2d(60, 48));
+        }
+        public static void generatePlotPointsFour() {
         /** FOUR Config */
-        wobbleDropFOUR = new Vector2d(103, -3);
+        wobbleDropFOUR = new Vector2d(105, -3);
 //        shootRingsFOUR = (new Vector2d(60, 40));
 //        turningFOUR = (new Vector2d(61, 48));
         grabWobbleGoalFOUR = new Vector2d(23, 12);
@@ -161,9 +164,9 @@ public class RedMainAuto extends LinearOpMode {
 
     }
 
-    public void generatePath(String pos) {
+    public void generatePathNone(String pos) {
 
-        generatePlotPoints();
+        generatePlotPointsNone();
         int n = 0;
 
         if (pos == "NONE") {
@@ -186,7 +189,7 @@ public class RedMainAuto extends LinearOpMode {
                 .splineToConstantHeading(grabWobbleGoalNONE, 0)
                 .build();
         grabSecondWGNONE = robot.trajectoryBuilder(toShootRingsNONE.end()) //Pose2d(84,24))
-                .splineTo(clawGrabWobbleNONE, Math.toRadians(97))
+                .splineTo(clawGrabWobbleNONE, Math.toRadians(110))
                 .build();
         beforeDeliveryNONE = robot.trajectoryBuilder(grabSecondWGNONE.end())
                 .lineTo(toRightNONE)
@@ -194,15 +197,18 @@ public class RedMainAuto extends LinearOpMode {
         secondDeliveryNONE = robot.trajectoryBuilder(beforeDeliveryNONE.end())
                 .splineTo(secondPlacementNONE, 0)
                 .build();
-        shootToGoalNONE = robot.trajectoryBuilder(secondDeliveryNONE.end())
-                .lineTo(ringPosNONE)
-                .build();
-        turningToShootNONE = robot.trajectoryBuilder(shootToGoalNONE.end())
-                .splineTo(shootRingsNONE,Math.toRadians(180))
-                .build();
-        parkNONE = robot.trajectoryBuilder(turningToShootNONE.end())
+//        shootToGoalNONE = robot.trajectoryBuilder(secondDeliveryNONE.end())
+//                .lineTo(ringPosNONE)
+//                .build();
+//        turningToShootNONE = robot.trajectoryBuilder(shootToGoalNONE.end())
+//                .splineTo(shootRingsNONE, Math.toRadians(180))
+//                .build();
+        parkNONE = robot.trajectoryBuilder(secondDeliveryNONE.end())
                 .back(10)
                 .build();
+    }
+    public void generatePathOne(String pos) {
+        generatePlotPointsOne();
         /** 1 Ring Not Working */
         myTrajectoryONE = robot.trajectoryBuilder(new Pose2d(0, 0, 0))
                 .lineTo(wobbleDropONE)
@@ -211,7 +217,7 @@ public class RedMainAuto extends LinearOpMode {
                 .splineToConstantHeading(grabWobbleGoalONE, 0)
                 .build();
         grabSecondWGONE = robot.trajectoryBuilder(toShootRingsONE.end()) //Pose2d(84,24))
-                .splineTo(clawGrabWobbleONE, Math.toRadians(97))
+                .splineTo(clawGrabWobbleONE, Math.toRadians(99))
                 .build();
         beforeDeliveryONE = robot.trajectoryBuilder(grabSecondWGONE.end())
                 .lineTo(toRightONE)
@@ -219,15 +225,18 @@ public class RedMainAuto extends LinearOpMode {
         secondDeliveryONE = robot.trajectoryBuilder(beforeDeliveryONE.end())
                 .splineTo(secondPlacementONE, 0)
                 .build();
-        shootToGoalONE = robot.trajectoryBuilder(secondDeliveryONE.end())
-                .lineTo(ringPosONE)
+//        shootToGoalONE = robot.trajectoryBuilder(secondDeliveryONE.end())
+//                .lineTo(ringPosONE)
+//                .build();
+//        turningToShootONE = robot.trajectoryBuilder(shootToGoalONE.end())
+//                .splineTo(shootRingsONE, Math.toRadians(170))
+//                .build();
+        parkONE = robot.trajectoryBuilder(secondDeliveryONE.end())
+                .back(10)
                 .build();
-        turningToShootONE = robot.trajectoryBuilder(shootToGoalONE.end())
-                .splineTo(shootRingsONE, Math.toRadians(170))
-                .build();
-        parkONE = robot.trajectoryBuilder(turningToShootONE.end())
-                .lineTo(onLineONE)
-                .build();
+    }
+    public void generatePathFour(String pos) {
+        generatePlotPointsFour();
         /** 4 Ring Configuration */
         myTrajectoryFOUR = robot.trajectoryBuilder(new Pose2d(0, 0, 0))
                 .lineTo(wobbleDropFOUR)
@@ -235,18 +244,18 @@ public class RedMainAuto extends LinearOpMode {
         toShootRingsFOUR = robot.trajectoryBuilder(myTrajectoryFOUR.end())
                 .splineToConstantHeading(grabWobbleGoalFOUR, 0)
                 .build();
-//        grabSecondWGFOUR = robot.trajectoryBuilder(toShootRingsFOUR.end()) //Pose2d(84,24))
-//                .splineTo(clawGrabWobbleFOUR, Math.toRadians(97))//116.62))
-//                .build();
-//        beforeDeliveryFOUR = robot.trajectoryBuilder(grabSecondWGFOUR.end())
-//                .lineTo(toRightFOUR)
-//                .build();
-//        secondDeliveryFOUR = robot.trajectoryBuilder(beforeDeliveryFOUR.end())
-//                .splineTo(secondPlacementFOUR, 0)
-//                .build();
-//        parkFOUR = robot.trajectoryBuilder(secondDeliveryFOUR.end())
-//                .back(25)
-//                .build();
+        grabSecondWGFOUR = robot.trajectoryBuilder(toShootRingsFOUR.end()) //Pose2d(84,24))
+                .splineTo(clawGrabWobbleFOUR, Math.toRadians(99))//116.62))
+                .build();
+        beforeDeliveryFOUR = robot.trajectoryBuilder(grabSecondWGFOUR.end())
+                .lineTo(toRightFOUR)
+                .build();
+        secondDeliveryFOUR = robot.trajectoryBuilder(beforeDeliveryFOUR.end())
+                .splineTo(secondPlacementFOUR, 0)
+                .build();
+        parkFOUR = robot.trajectoryBuilder(secondDeliveryFOUR.end())
+                .back(30)
+                .build();
     }
 
     @Override
@@ -282,16 +291,13 @@ public class RedMainAuto extends LinearOpMode {
             telemetry.update();
         }
         opencv.shutDownOpenCV();
-//        wobble_grabber.setPosition(-1);
+        wobble_grabber.setPosition(-1);
         waitForStart();
-        telemetry.addData("Start","");
-        telemetry.update();
-        generatePath(RingConfig);
-
         telemetry.addData("Finished calculating Traj","");
         telemetry.update();
 
         if (RingConfig == "NONE"){
+            generatePathNone(RingConfig);
             robot.followTrajectory(myTrajectoryNONE);
             clawBack(robot);
             robot.followTrajectory(toShootRingsNONE);
@@ -301,16 +307,14 @@ public class RedMainAuto extends LinearOpMode {
             liftWobble(robot);
             robot.followTrajectory(beforeDeliveryNONE);
             robot.followTrajectory(secondDeliveryNONE);
-            justClawDownOpen(robot);
-            robot.followTrajectory(shootToGoalNONE);
-            robot.followTrajectory(turningToShootNONE);
-            launchRings(robot);
-            robot.followTrajectory(parkNONE);
+//            justClawDownOpen(robot);
+//            robot.followTrajectory(parkNONE);
 
         }
         else if (RingConfig == "ONE"){
+            generatePathOne(RingConfig);
             robot.followTrajectory(myTrajectoryONE);
-            clawBack(robot);
+            clawBackOne(robot);
             robot.followTrajectory(toShootRingsONE);
             clawGrabWobble(robot);
             robot.followTrajectory(grabSecondWGONE);
@@ -319,13 +323,14 @@ public class RedMainAuto extends LinearOpMode {
             robot.followTrajectory(beforeDeliveryONE);
             robot.followTrajectory(secondDeliveryONE);
             justClawDownOpen(robot);
-            robot.followTrajectory(shootToGoalONE);
-            robot.followTrajectory(turningToShootONE);
-            launchRings(robot);
+//            robot.followTrajectory(shootToGoalONE);
+//            robot.followTrajectory(turningToShootONE);
+//            launchRings(robot);
             robot.followTrajectory(parkONE);
         }
         else if (RingConfig == "FOUR"){
 
+            generatePathFour(RingConfig);
              robot.followTrajectory(myTrajectoryFOUR);
              clawBack(robot);
              robot.followTrajectory(toShootRingsFOUR);
@@ -346,16 +351,43 @@ public class RedMainAuto extends LinearOpMode {
         sleep(400);
         arm.setPower(0);
         arm2.setPower(0);
-        sleep(250);
+        sleep(300);
         wobble_grabber.setPosition(1);
         sleep(250);
         arm.setPower(.8);
         arm2.setPower(.8);
-        sleep(400);
+        sleep(300);
         arm.setPower(0);
         arm2.setPower(0);
         wobble_grabber.setPosition(0);
+        arm.setPower(.8);
+        arm2.setPower(.8);
+        sleep(100);
+        arm.setPower(0);
+        arm2.setPower(0);
     }
+    private void clawBackOne(SampleMecanumDrive robot) {
+        arm.setPower(-.7);
+        arm2.setPower(-.7);
+        sleep(500);
+        arm.setPower(0);
+        arm2.setPower(0);
+        sleep(300);
+        wobble_grabber.setPosition(1);
+        sleep(250);
+        arm.setPower(.8);
+        arm2.setPower(.8);
+        sleep(300);
+        arm.setPower(0);
+        arm2.setPower(0);
+        wobble_grabber.setPosition(0);
+        arm.setPower(.8);
+        arm2.setPower(.8);
+        sleep(100);
+        arm.setPower(0);
+        arm2.setPower(0);
+    }
+
     private void justClawDownOpen(SampleMecanumDrive robot){
         wobble_grabber.setPosition(1);
         sleep(200);
@@ -370,7 +402,7 @@ public class RedMainAuto extends LinearOpMode {
     private void clawGrabWobble(SampleMecanumDrive robot){
         arm.setPower(-.5);
         arm2.setPower(-.5);
-        sleep(600);
+        sleep(550);
         arm.setPower(0);
         arm2.setPower(0);
         wobble_grabber.setPosition(1);

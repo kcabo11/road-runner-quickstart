@@ -66,9 +66,13 @@ public class   SampleTeleOp extends LinearOpMode
         arm2 = hardwareMap.dcMotor.get("arm2");
         wobble_grabber = hardwareMap.servo.get("wobble_grabber");
 
+
+
         rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
         rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
         arm2.setDirection(DcMotorSimple.Direction.REVERSE);
+        arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        arm2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         waitForStart();
 
     while (opModeIsActive()) {
@@ -349,6 +353,9 @@ public class   SampleTeleOp extends LinearOpMode
         telemetry.addData("driving State", drivingState);
         telemetry.addData("computed spd", speed);
         telemetry.addData("stick_direction", stick_directon);
+        telemetry.addData("arm encoder", arm.getCurrentPosition());
+        telemetry.addData("arm2 encoder", arm2.getCurrentPosition());
+        telemetry.addData("fly wheel", flyWheel.getCurrentPosition());
 
         telemetry.update();
     }

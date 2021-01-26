@@ -107,8 +107,8 @@ public class LibraryOpenCV {
 
         //Core Values: Defines location and size of sample regions
         static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(175, 0);
-        static final int REGION_WIDTH = 60;
-        static final int REGION_HEIGHT = 85;
+        static final int REGION_WIDTH = 70;
+        static final int REGION_HEIGHT = 95;
 
         final int FOUR_RING_THRESHOLD = 149;
         final int ONE_RING_THRESHOLD = 140;//135;
