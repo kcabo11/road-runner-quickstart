@@ -1,11 +1,12 @@
 package TeleOp;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-
+@Disabled
 @TeleOp(name = "StraifingTest", group = "Tests")
 public class StraifingTest extends LinearOpMode
 {
@@ -15,13 +16,8 @@ public class StraifingTest extends LinearOpMode
     private DcMotor rightBack;
     private DcMotor leftBack;
 
-
-
-
-
     @Override
     public void runOpMode() {
-
 
         rightFront = hardwareMap.dcMotor.get("right_front");
         leftFront = hardwareMap.dcMotor.get("left_front");
