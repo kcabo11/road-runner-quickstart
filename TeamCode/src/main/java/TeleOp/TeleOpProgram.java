@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.util.Encoder;
 
 
 @TeleOp(name = "SampleOpModeJosh", group = "Tutorials")
-public class   SampleTeleOp extends LinearOpMode
+public class TeleOpProgram extends LinearOpMode
 {
 
     private DcMotor rightFront;
@@ -20,12 +20,14 @@ public class   SampleTeleOp extends LinearOpMode
     private DcMotor leftBack;
     private DcMotor intake;
     private DcMotor flyWheel;
-    private Servo fireSelector;
     private DcMotor arm;
-    private DcMotor arm2;
+    private DcMotor ramp_adjustor;
     private Servo intake_aid;
     private Servo wobble_grabber;
+    private Servo fireSelector;
     public ElapsedTime clawruntime = new ElapsedTime();
+    public ElapsedTime fireruntime = new ElapsedTime();
+    public ElapsedTime intakehelperruntime = new ElapsedTime();
     private int fire_state = 0;
     private int claw_state = 0;
     private int intake_state = 0;
@@ -35,7 +37,7 @@ public class   SampleTeleOp extends LinearOpMode
     private int direction = -1;
     // Setting scaling to full speed.
     private double scaleFactor = 1;
-    private double scaleTurningSpeed = 1;
+    private double scaleTurningSpeed = .6;
 
     private int wobble_pos = 1;
 
@@ -63,12 +65,11 @@ public class   SampleTeleOp extends LinearOpMode
         fireSelector = hardwareMap.servo.get("fire_selector");
         intake_aid = hardwareMap.servo.get("intake_aid");
         arm = hardwareMap.dcMotor.get("arm");
-        arm2 = hardwareMap.dcMotor.get("arm2");
         wobble_grabber = hardwareMap.servo.get("wobble_grabber");
+        ramp_adjustor = hardwareMap.dcMotor.get("ramp_adjustor");
 
         rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
         rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
-        arm2.setDirection(DcMotorSimple.Direction.REVERSE);
         waitForStart();
 
     while (opModeIsActive()) {
@@ -77,7 +78,7 @@ public class   SampleTeleOp extends LinearOpMode
         drivingState = "";
 
         double r = Math.hypot(-gamepad1.left_stick_x, gamepad1.left_stick_y);
-        double robotAngle = Math.atan2(gamepad1.left_stick_y, -gamepad1.left_stick_x) - Math.PI / 4;
+        double robotAngle = Math.atan2(-gamepad1.left_stick_y, gamepad1.left_stick_x) - Math.PI / 4;
         double rightX = -gamepad1.right_stick_x;
 // When the direction value is reversed this if statement inverts the addition and subtraction for turning.
 // Default mode: The robot starts with the scaleTurningSpeed set to 1, scaleFactor set to 1, and direction set to forward.
@@ -100,113 +101,6 @@ public class   SampleTeleOp extends LinearOpMode
             leftBack.setPower(v3);
             rightBack.setPower(v4);
         }
-
-
-// old left stick that was made by katie and josh, has problems
-//        if (gamepad1.right_stick_x == 0) {
-//            speed = Math.sqrt(Math.pow(gamepad1.left_stick_x, 2) + Math.pow(-gamepad1.left_stick_y, 2));
-//            stick_directon = Math.toDegrees(Math.asin(-gamepad1.left_stick_y / speed));
-//
-//            if (gamepad1.left_stick_x < 0 && -gamepad1.left_stick_y > 0) {
-//                stick_directon = 180 - Math.abs(stick_directon);
-//            } else if (gamepad1.left_stick_x < 0 && -gamepad1.left_stick_y < 0) {
-//                stick_directon = 180 + Math.abs(stick_directon);
-//            } else if (gamepad1.left_stick_x > 0 && -gamepad1.left_stick_y < 0) {
-//                stick_directon = 360 - Math.abs(stick_directon);
-//            } else {
-//                stick_directon = stick_directon;
-//            }
-//
-//            //1 direction, +x, +y 1st  /
-//            //if ((stick_directon <= (theta + delta)) && (stick_directon >= (theta + .01))) { //  22.51 < sd < 67.5;
-//            if ((stick_directon > 22.5) && (stick_directon <= 67.5)) {
-//                leftFront.setPower(speed);
-//                leftBack.setPower(0);  //for the diagonal upward 45 degree
-//                rightFront.setPower(0);
-//                rightBack.setPower(speed);
-//                drivingState = "1st region";
-//            }
-//
-//            // 2 position +y |
-//            //else if ((stick_directon <= (theta + (delta * 2))) && (stick_directon >= (theta + delta + .01))) {
-//            else if ((stick_directon > 67.5) && (stick_directon <= 112.5)) {
-//                leftFront.setPower(speed);
-//                leftBack.setPower(speed);
-//                rightFront.setPower(speed);
-//                rightBack.setPower(speed);
-//                drivingState = "2nd Region";
-//            }
-//
-//            //3 position -x, +y  \
-//            else if ((stick_directon > 112.5) && (stick_directon <= 157.5)) {
-//                leftFront.setPower(0);
-//                leftBack.setPower(speed);
-//                rightFront.setPower(speed);
-//                rightBack.setPower(0);
-//                drivingState = "3rd Region";
-//            }
-//            //4 position -x (straifing)  <––
-//            else if ((stick_directon > 157.5) && (stick_directon <= 202.5)) {
-//                leftFront.setPower(-speed);
-//                leftBack.setPower(speed);
-//                rightFront.setPower(speed);
-//                rightBack.setPower(-speed);
-//                drivingState = "4th Region";
-//            }
-//            //5 position -y, -x   /
-//            else if ((stick_directon > 202.5) && (stick_directon <= 247.5)) {
-//                leftFront.setPower(-speed);
-//                leftBack.setPower(0);
-//                rightFront.setPower(0);
-//                rightBack.setPower(-speed);
-//                drivingState = "5th Region";
-//            }
-//            // 6 position -y  |
-//            else if ((stick_directon > 247.5) && (stick_directon <= 292.5)) {
-//                leftFront.setPower(-speed);
-//                leftBack.setPower(-speed);
-//                rightFront.setPower(-speed);
-//                rightBack.setPower(-speed);
-//                drivingState = "6th Region";
-//            }
-//            //7 position +x, -y   \
-//            else if ((stick_directon > 292.5) && (stick_directon <= 337.5)) {
-//                leftFront.setPower(0);
-//                leftBack.setPower(-speed);
-//                rightFront.setPower(-speed);
-//                rightBack.setPower(0);
-//                drivingState = "7th Region";
-//            }
-//            //8 position ––> (strafing)
-//            else if ((stick_directon > 337.5) && (stick_directon <= 22.5)) {
-//                leftFront.setPower(speed);
-//                leftBack.setPower(-speed);
-//                rightFront.setPower(-speed);
-//                rightBack.setPower(speed);
-//                drivingState = "8th Region";
-//            }
-//          else { setPowers(0, 0, 0, 0);}
-            //Turning
-//            if (gamepad1.right_stick_x > 0) {
-//                rightFront.setPower(.4);
-//                leftFront.setPower(-.4);
-//                rightBack.setPower(.4);
-//                leftBack.setPower(-.4);
-//            } else if (-gamepad1.right_stick_x > 0) {
-//                rightFront.setPower(-.4);
-//                leftFront.setPower(.4);
-//                rightBack.setPower(-.4);
-//                leftBack.setPower(.4);
-//            }
-//            else {
-//                leftBack.setPower(0);
-//                leftFront.setPower(0);
-//                rightBack.setPower(0);
-//                rightFront.setPower(0);
-//            }
-//        }
-
-
 
        /**
        GMAEPAD 2:
@@ -231,43 +125,31 @@ public class   SampleTeleOp extends LinearOpMode
             flyWheel.setPower(0);
         }
 
-
         //fire selector
         switch (fire_state) {
             case 0:
                 if(gamepad2.a){
+                    fireruntime.reset();
                     fireSelector.setPosition(0);
-                    //manual case mover thing
-
-                    sleep (300);
                     fire_state = 1;
                     break;
                 }
             case 1:
-                if (fireSelector.getPosition() == 0) {
+                if (fireruntime.milliseconds() >= 300) {
+                    fireruntime.reset();
                     fireSelector.setPosition(1);
-                    sleep(300);
-                    fire_state ++;
-                    break;
-                }
-            case 2:
-                if (fireSelector.getPosition() == 1) {
                     fire_state = 0;
                     break;
                 }
         }
 
-
         //Arm mover motor
         if (gamepad2.dpad_up) {
-            arm.setPower(.3);
-            arm2.setPower(.3);
-        } else if (gamepad2.dpad_down){
             arm.setPower(-.3);
-            arm2.setPower(-.3);
+        } else if (gamepad2.dpad_down){
+            arm.setPower(.3);
         } else {
             arm.setPower(0);
-            arm2.setPower(0);
         }
 
         switch (claw_state) {
@@ -295,24 +177,25 @@ public class   SampleTeleOp extends LinearOpMode
         switch (intake_state) {
             case 0:
                 if(gamepad2.b){
+                    intakehelperruntime.reset();
                     intake_aid.setPosition(0);
-                    //manual case mover thing
-                    sleep (300);
                     intake_state = 1;
                     break;
                 }
             case 1:
-                if (intake_aid.getPosition() == 0) {
+                if (intakehelperruntime.milliseconds() >= 300) {
                     intake_aid.setPosition(.6);
-                    sleep(300);
-                    intake_state ++;
-                    break;
-                }
-            case 2:
-                if (intake_aid.getPosition() == .6) {
                     intake_state = 0;
                     break;
                 }
+        }
+
+        if(gamepad2.left_stick_y > 0) {
+            ramp_adjustor.setPower(.3);
+        } else if(gamepad2.left_stick_y < 0) {
+            ramp_adjustor.setPower(-.3);
+        } else {
+            ramp_adjustor.setPower(0);
         }
 
 
@@ -338,6 +221,10 @@ public class   SampleTeleOp extends LinearOpMode
         telemetry.addData("driving State", drivingState);
         telemetry.addData("computed spd", speed);
         telemetry.addData("stick_direction", stick_directon);
+        telemetry.addData("ramp_motor_enc", ramp_adjustor.getCurrentPosition());
+        telemetry.addData("arm_enc", arm.getCurrentPosition());
+        telemetry.addData("fire_selector position", fireSelector.getPosition());
+
 
         telemetry.update();
     }
