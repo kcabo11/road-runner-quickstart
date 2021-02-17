@@ -72,6 +72,7 @@ public class   SampleTeleOp extends LinearOpMode
         rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
         arm2.setDirection(DcMotorSimple.Direction.REVERSE);
         arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         arm2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         waitForStart();
 
@@ -240,7 +241,7 @@ public class   SampleTeleOp extends LinearOpMode
         if (gamepad2.right_bumper) {
             flyWheel.setPower(-1);
         }
-        else if (gamepad2.left_bumper) {
+        else if (gamepad2.left_bumper && !gamepad2.right_bumper) {
             flyWheel.setPower(.3);
         } else {
             flyWheel.setPower(0);
@@ -250,8 +251,9 @@ public class   SampleTeleOp extends LinearOpMode
         //fire selector
         switch (fire_state) {
             case 0:
+//                fireSelector.setPosition(1);
                 if(gamepad2.a && gamepad2.right_bumper){
-                    fireSelector.setPosition(0);
+                 fireSelector.setPosition(0);
                     //manual case mover thing
 
                     sleep (300);
@@ -275,11 +277,11 @@ public class   SampleTeleOp extends LinearOpMode
 
         //Arm mover motor
         if (gamepad2.dpad_up) {
-            arm.setPower(.5);
-            arm2.setPower(.5);
+            arm.setPower(.35);
+            arm2.setPower(.35);
         } else if (gamepad2.dpad_down){
-            arm.setPower(-.5);
-            arm2.setPower(-.5);
+            arm.setPower(-.35);
+            arm2.setPower(-.35);
         } else {
             arm.setPower(0);
             arm2.setPower(0);
@@ -341,6 +343,7 @@ public class   SampleTeleOp extends LinearOpMode
         telemetry.addData("fire_state", fire_state);
         telemetry.addData("claw_state", claw_state);
         telemetry.addData("intake_state", intake_state);
+        telemetry.addData("Fire position", fireSelector.getPosition());
         telemetry.addData("right back power", rightBack.getPower());
         telemetry.addData("right Front power", rightFront.getPower());
         telemetry.addData("left back power", leftBack.getPower());

@@ -27,11 +27,13 @@ import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityCons
 import com.acmerobotics.roadrunner.util.NanoClock;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.lynx.LynxModule;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
@@ -42,6 +44,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+
+import org.firstinspires.ftc.teamcode.drive.opmode.SensorMB1242;
 
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ACCEL;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ANG_ACCEL;
@@ -94,9 +98,23 @@ SampleMecanumDrive extends MecanumDrive {
 
     private LinkedList<Pose2d> poseHistory;
 
-    private DcMotorEx leftBack, leftFront, rightFront, rightBack;
+    public DcMotorEx leftBack, leftFront, rightFront, rightBack;
     private List<DcMotorEx> motors;
-    private BNO055IMU imu;
+    public BNO055IMU imu;
+
+    // START ORIG HW BEEP
+    public DcMotor intake;
+    public DcMotor flyWheel;
+    public Servo fireSelector;
+    public DcMotor arm;
+    public DcMotor arm2;
+    public Servo intake_aid;
+    public Servo wobble_grabber;
+
+    public SensorMB1242 rightSonic = null;
+    public SensorMB1242 leftSonic = null;
+    // END ORIG HW BEEP
+    //public HardwareMap hardwareMap = null;
 
     private VoltageSensor batteryVoltageSensor;
 
@@ -170,6 +188,30 @@ SampleMecanumDrive extends MecanumDrive {
 
         leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        /**
+         * Original HW Beep Init below
+         */
+        // Define Motors, Servos, and Sensors
+        intake = hardwareMap.dcMotor.get("intake");
+        flyWheel = hardwareMap.dcMotor.get("fly_wheel");
+        fireSelector = hardwareMap.servo.get("fire_selector");
+        intake_aid = hardwareMap.servo.get("intake_aid");
+        arm = hardwareMap.dcMotor.get("arm");
+        arm2 = hardwareMap.dcMotor.get("arm2");
+        wobble_grabber = hardwareMap.servo.get("wobble_grabber");
+
+        leftSonic = hardwareMap.get(SensorMB1242.class, "left_sonic");
+        leftSonic.changeI2cAddress(225);
+        rightSonic = hardwareMap.get(SensorMB1242.class, "right_sonic");
+
+        // Set Motor and Servo Direction
+        arm2.setDirection(DcMotorSimple.Direction.REVERSE);
+        arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        // Set run using encoders
+        arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        arm2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // TODO: if desired, use setLocalizer() to change the localization method
         // for instance, setLocalizer(new ThreeTrFackingWheelLocalizer(...));
