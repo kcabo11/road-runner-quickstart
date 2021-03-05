@@ -6,7 +6,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
+import com.qualcomm.robotcore.hardware.DigitalChannel;
+import org.firstinspires.ftc.robotcontroller.external.samples.SensorDigitalTouch;
 import org.firstinspires.ftc.teamcode.util.Encoder;
 
 
@@ -25,12 +26,14 @@ public class TeleOpProgram extends LinearOpMode
     private Servo intake_aid;
     private Servo wobble_grabber;
     private Servo fireSelector;
+    private DigitalChannel ramp_sensor;
     public ElapsedTime clawruntime = new ElapsedTime();
     public ElapsedTime fireruntime = new ElapsedTime();
     public ElapsedTime intakehelperruntime = new ElapsedTime();
     private int fire_state = 0;
     private int claw_state = 0;
     private int intake_state = 0;
+    private int rampSensor_state = 0;
 
     String drivingState = "";
 
@@ -67,6 +70,7 @@ public class TeleOpProgram extends LinearOpMode
         arm = hardwareMap.dcMotor.get("arm");
         wobble_grabber = hardwareMap.servo.get("wobble_grabber");
         ramp_adjustor = hardwareMap.dcMotor.get("ramp_adjustor");
+        ramp_sensor = hardwareMap.digitalChannel.get("ramp_sensor");
 
         rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
         rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -117,7 +121,7 @@ public class TeleOpProgram extends LinearOpMode
 
         //flywheel
         if (gamepad2.right_bumper) {
-            flyWheel.setPower(-1);
+            flyWheel.setPower(-.75);
         }
         else if (gamepad2.left_bumper) {
             flyWheel.setPower(.3);
@@ -197,6 +201,24 @@ public class TeleOpProgram extends LinearOpMode
         } else {
             ramp_adjustor.setPower(0);
         }
+//
+//        switch (rampSensor_state) {
+//            case 0:
+//                if(gamepad2.x){
+//                   while (ramp_sensor.getState() == false) {
+//                       ramp_adjustor.setTargetPosition(-999999);
+//                   }
+//                   ramp_adjustor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//                    intake_state = 1;
+//                    break;
+//                }
+//            case 1:
+//                if (ramp) {
+//
+//                    intake_state = 0;
+//                    break;
+//                }
+//        }
 
 
 
@@ -224,6 +246,7 @@ public class TeleOpProgram extends LinearOpMode
         telemetry.addData("ramp_motor_enc", ramp_adjustor.getCurrentPosition());
         telemetry.addData("arm_enc", arm.getCurrentPosition());
         telemetry.addData("fire_selector position", fireSelector.getPosition());
+        telemetry.addData("ramp_adjustor", ramp_adjustor.getCurrentPosition());
 
 
         telemetry.update();

@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.drive.opmode;
 
 import android.annotation.SuppressLint;
 
-import Sample.OpenCV_Ring_Finder;
+//import Sample.OpenCV_Ring_Finder;
 import Sample.SampleMecanumDrive;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
