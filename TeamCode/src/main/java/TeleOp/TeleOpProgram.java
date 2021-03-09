@@ -26,7 +26,6 @@ public class TeleOpProgram extends LinearOpMode
     private Servo intake_aid;
     private Servo wobble_grabber;
     private Servo fireSelector;
-    private DigitalChannel ramp_sensor;
     public ElapsedTime clawruntime = new ElapsedTime();
     public ElapsedTime fireruntime = new ElapsedTime();
     public ElapsedTime intakehelperruntime = new ElapsedTime();
@@ -34,6 +33,8 @@ public class TeleOpProgram extends LinearOpMode
     private int claw_state = 0;
     private int intake_state = 0;
     private int rampSensor_state = 0;
+    private int flywheel_state = 0;
+    private double flywheelMultiplier = 1;
 
     String drivingState = "";
 
@@ -70,7 +71,6 @@ public class TeleOpProgram extends LinearOpMode
         arm = hardwareMap.dcMotor.get("arm");
         wobble_grabber = hardwareMap.servo.get("wobble_grabber");
         ramp_adjustor = hardwareMap.dcMotor.get("ramp_adjustor");
-        ramp_sensor = hardwareMap.digitalChannel.get("ramp_sensor");
 
         rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
         rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -121,7 +121,7 @@ public class TeleOpProgram extends LinearOpMode
 
         //flywheel
         if (gamepad2.right_bumper) {
-            flyWheel.setPower(-.75);
+            flyWheel.setPower(-1 * flywheelMultiplier);
         }
         else if (gamepad2.left_bumper) {
             flyWheel.setPower(.3);
@@ -201,6 +201,34 @@ public class TeleOpProgram extends LinearOpMode
         } else {
             ramp_adjustor.setPower(0);
         }
+
+
+       // Flywheel power control
+        switch (flywheel_state) {
+            case 0:
+                if(gamepad2.right_stick_button){
+                    flywheelMultiplier = .85;
+                    flywheel_state = 1;
+                }
+                break;
+            case 1:
+                if (!gamepad2.right_stick_button) {
+                    flywheel_state = 2;
+                }
+                break;
+            case 2:
+                if (gamepad2.right_stick_button) {
+                    flywheelMultiplier = 1;
+                    flywheel_state = 3;
+                }
+                break;
+            case 3:
+                if(!gamepad2.right_stick_button) {
+                    flywheel_state = 0;
+                }
+                break;
+        }
+
 //
 //        switch (rampSensor_state) {
 //            case 0:
@@ -247,6 +275,9 @@ public class TeleOpProgram extends LinearOpMode
         telemetry.addData("arm_enc", arm.getCurrentPosition());
         telemetry.addData("fire_selector position", fireSelector.getPosition());
         telemetry.addData("ramp_adjustor", ramp_adjustor.getCurrentPosition());
+        telemetry.addData("flywheel speed", flywheelMultiplier);
+        telemetry.addData("flywheel_case", flywheel_state);
+        telemetry.addData("right stick botton", gamepad2.right_stick_button);
 
 
         telemetry.update();
