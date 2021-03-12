@@ -15,6 +15,7 @@ import org.openftc.easyopencv.OpenCvInternalCamera;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 //@Disabled
+@Disabled
 @TeleOp
 public class OpenCVExample extends LinearOpMode
 {

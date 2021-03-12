@@ -252,25 +252,25 @@ public class TeleOpProgram extends LinearOpMode
 
 
         telemetry.addData("H nutter", "yes");
-        telemetry.addData("left_front_enc " , leftFront.getCurrentPosition());
-        telemetry.addData("right_front_enc " , rightFront.getCurrentPosition());
-        telemetry.addData("left_back_enc " , leftBack.getCurrentPosition());
-        telemetry.addData("right_back_enc " , rightBack.getCurrentPosition());
-        telemetry.addData("fire_state", fire_state);
-        telemetry.addData("claw_state", claw_state);
-        telemetry.addData("intake_state", intake_state);
-        telemetry.addData("right back power", rightBack.getPower());
-        telemetry.addData("right Front power", rightFront.getPower());
-        telemetry.addData("left back power", leftBack.getPower());
-        telemetry.addData("left front power", leftFront.getPower());
-        telemetry.addData("claw", wobble_grabber.getPosition());
-        telemetry.addData("gp1 right stick y", gamepad1.right_stick_y);
-        telemetry.addData("gp1 right stick x", gamepad1.right_stick_x);
-        telemetry.addData("gp1 left stick y", gamepad1.left_stick_y);
-        telemetry.addData("gp1 left stick x", gamepad1.left_stick_x);
-        telemetry.addData("driving State", drivingState);
-        telemetry.addData("computed spd", speed);
-        telemetry.addData("stick_direction", stick_directon);
+//        telemetry.addData("left_front_enc " , leftFront.getCurrentPosition());
+//        telemetry.addData("right_front_enc " , rightFront.getCurrentPosition());
+//        telemetry.addData("left_back_enc " , leftBack.getCurrentPosition());
+//        telemetry.addData("right_back_enc " , rightBack.getCurrentPosition());
+//        telemetry.addData("fire_state", fire_state);
+//        telemetry.addData("claw_state", claw_state);
+//        telemetry.addData("intake_state", intake_state);
+//        telemetry.addData("right back power", rightBack.getPower());
+//        telemetry.addData("right Front power", rightFront.getPower());
+//        telemetry.addData("left back power", leftBack.getPower());
+//        telemetry.addData("left front power", leftFront.getPower());
+//        telemetry.addData("claw", wobble_grabber.getPosition());
+//        telemetry.addData("gp1 right stick y", gamepad1.right_stick_y);
+//        telemetry.addData("gp1 right stick x", gamepad1.right_stick_x);
+//        telemetry.addData("gp1 left stick y", gamepad1.left_stick_y);
+//        telemetry.addData("gp1 left stick x", gamepad1.left_stick_x);
+//        telemetry.addData("driving State", drivingState);
+//        telemetry.addData("computed spd", speed);
+//        telemetry.addData("stick_direction", stick_directon);
         telemetry.addData("ramp_motor_enc", ramp_adjustor.getCurrentPosition());
         telemetry.addData("arm_enc", arm.getCurrentPosition());
         telemetry.addData("fire_selector position", fireSelector.getPosition());
@@ -278,7 +278,6 @@ public class TeleOpProgram extends LinearOpMode
         telemetry.addData("flywheel speed", flywheelMultiplier);
         telemetry.addData("flywheel_case", flywheel_state);
         telemetry.addData("right stick botton", gamepad2.right_stick_button);
-
 
         telemetry.update();
     }
