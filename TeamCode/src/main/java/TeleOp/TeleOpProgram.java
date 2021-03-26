@@ -24,7 +24,7 @@ public class TeleOpProgram extends LinearOpMode
     private DcMotor arm;
     private DcMotor ramp_adjustor;
     private Servo intake_aid;
-    private Servo wobble_grabber;
+    private Servo claw;
     private Servo fireSelector;
     public ElapsedTime clawruntime = new ElapsedTime();
     public ElapsedTime fireruntime = new ElapsedTime();
@@ -32,7 +32,7 @@ public class TeleOpProgram extends LinearOpMode
     private int fire_state = 0;
     private int claw_state = 0;
     private int intake_state = 0;
-    private int rampSensor_state = 0;
+    private int arm_state = 0;
     private int flywheel_state = 0;
     private double flywheelMultiplier = 1;
 
@@ -69,7 +69,7 @@ public class TeleOpProgram extends LinearOpMode
         fireSelector = hardwareMap.servo.get("fire_selector");
         intake_aid = hardwareMap.servo.get("intake_aid");
         arm = hardwareMap.dcMotor.get("arm");
-        wobble_grabber = hardwareMap.servo.get("wobble_grabber");
+        claw = hardwareMap.servo.get("claw");
         ramp_adjustor = hardwareMap.dcMotor.get("ramp_adjustor");
 
         rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -139,7 +139,7 @@ public class TeleOpProgram extends LinearOpMode
                     break;
                 }
             case 1:
-                if (fireruntime.milliseconds() >= 300) {
+                if (fireruntime.milliseconds() >= 400) {
                     fireruntime.reset();
                     fireSelector.setPosition(1);
                     fire_state = 0;
@@ -149,24 +149,25 @@ public class TeleOpProgram extends LinearOpMode
 
         //Arm mover motor
         if (gamepad2.dpad_up) {
-            arm.setPower(-.3);
+            arm.setPower(-.5);
         } else if (gamepad2.dpad_down){
-            arm.setPower(.3);
+            arm.setPower(.5);
         } else {
             arm.setPower(0);
         }
 
+        //claw
         switch (claw_state) {
             case (0):
                 if (gamepad2.x) {
                     claw_state = 1;
-                    wobble_grabber.setPosition(wobble_pos);
+                    claw.setPosition(wobble_pos);
                 }
                 break;
             case (1):
                 clawruntime.reset();
                 if (!gamepad2.x) {
-                    wobble_grabber.setPosition(-1);
+                    claw.setPosition(-1);
                     claw_state = 0;
                     if (wobble_pos == -1) {
                         claw_state = 0;
@@ -194,20 +195,12 @@ public class TeleOpProgram extends LinearOpMode
                 }
         }
 
-        if(gamepad2.left_stick_y > 0) {
-            ramp_adjustor.setPower(.3);
-        } else if(gamepad2.left_stick_y < 0) {
-            ramp_adjustor.setPower(-.3);
-        } else {
-            ramp_adjustor.setPower(0);
-        }
-
 
        // Flywheel power control
         switch (flywheel_state) {
             case 0:
                 if(gamepad2.right_stick_button){
-                    flywheelMultiplier = .85;
+                    flywheelMultiplier = .90;
                     flywheel_state = 1;
                 }
                 break;
@@ -249,7 +242,55 @@ public class TeleOpProgram extends LinearOpMode
 //        }
 
 
+        //Automated arm mover to selected position
 
+        switch (arm_state) {
+            case 0:
+                if (gamepad2.y){
+                    arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    while (arm.getCurrentPosition() < 800) {
+                        arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                        arm.setTargetPosition(800);
+                        arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                        arm.setPower(.6);
+                        arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    }
+                    while (claw.getPosition() < 1) // this needs to be fixed i dont have enough time
+                    claw.setPosition(1);
+                    while (arm.getCurrentPosition() < 1600) {
+                        arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                        arm.setTargetPosition(1600);
+                        arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                        arm.setPower(.6);
+                        arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    }
+                    arm_state = 1;
+                }
+                break;
+            case 1:
+                if (!gamepad2.y) {
+                    arm_state = 2;
+                }
+                break;
+            case 2:
+                if (gamepad2.y) {
+                    arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                   arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    while(arm.getCurrentPosition() > -1600) {
+                       arm.setTargetPosition(-1600);
+                       arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                       arm.setPower(-.6);
+                   }
+                    arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    arm_state = 3;
+                }
+                break;
+            case 3:
+                if (!gamepad2.y){
+                    arm_state = 0;
+                }
+                break;
+        }
 
         telemetry.addData("H nutter", "yes");
 //        telemetry.addData("left_front_enc " , leftFront.getCurrentPosition());
@@ -263,7 +304,7 @@ public class TeleOpProgram extends LinearOpMode
 //        telemetry.addData("right Front power", rightFront.getPower());
 //        telemetry.addData("left back power", leftBack.getPower());
 //        telemetry.addData("left front power", leftFront.getPower());
-//        telemetry.addData("claw", wobble_grabber.getPosition());
+//        telemetry.addData("claw", claw.getPosition());
 //        telemetry.addData("gp1 right stick y", gamepad1.right_stick_y);
 //        telemetry.addData("gp1 right stick x", gamepad1.right_stick_x);
 //        telemetry.addData("gp1 left stick y", gamepad1.left_stick_y);
@@ -271,14 +312,15 @@ public class TeleOpProgram extends LinearOpMode
 //        telemetry.addData("driving State", drivingState);
 //        telemetry.addData("computed spd", speed);
 //        telemetry.addData("stick_direction", stick_directon);
-        telemetry.addData("ramp_motor_enc", ramp_adjustor.getCurrentPosition());
-        telemetry.addData("arm_enc", arm.getCurrentPosition());
+//        telemetry.addData("ramp_motor_enc", ramp_adjustor.getCurrentPosition());
+//        telemetry.addData("arm_enc", arm.getCurrentPosition());
         telemetry.addData("fire_selector position", fireSelector.getPosition());
         telemetry.addData("ramp_adjustor", ramp_adjustor.getCurrentPosition());
         telemetry.addData("flywheel speed", flywheelMultiplier);
         telemetry.addData("flywheel_case", flywheel_state);
         telemetry.addData("right stick botton", gamepad2.right_stick_button);
-
+        telemetry.addData("arm_case", arm_state);
+        telemetry.addData("arm_enc", arm.getCurrentPosition());
         telemetry.update();
     }
     }
