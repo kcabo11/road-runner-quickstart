@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import org.firstinspires.ftc.robotcontroller.external.samples.SensorDigitalTouch;
 import org.firstinspires.ftc.teamcode.util.Encoder;
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 
 
 @TeleOp(name = "SampleOpModeJosh", group = "Tutorials")
@@ -26,6 +27,7 @@ public class TeleOpProgram extends LinearOpMode
     private Servo intake_aid;
     private Servo claw;
     private Servo fireSelector;
+    private RevBlinkinLedDriver lights;
     public ElapsedTime clawruntime = new ElapsedTime();
     public ElapsedTime fireruntime = new ElapsedTime();
     public ElapsedTime intakehelperruntime = new ElapsedTime();
@@ -70,7 +72,7 @@ public class TeleOpProgram extends LinearOpMode
         intake_aid = hardwareMap.servo.get("intake_aid");
         arm = hardwareMap.dcMotor.get("arm");
         claw = hardwareMap.servo.get("claw");
-        ramp_adjustor = hardwareMap.dcMotor.get("ramp_adjustor");
+        lights = hardwareMap.get(RevBlinkinLedDriver.class, "lights");
 
         rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
         rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -290,6 +292,12 @@ public class TeleOpProgram extends LinearOpMode
                     arm_state = 0;
                 }
                 break;
+        }
+
+        if (flywheelMultiplier == 1) {
+            lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
+        } else if (flywheelMultiplier == .9) {
+            lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE);
         }
 
         telemetry.addData("H nutter", "yes");
