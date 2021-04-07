@@ -136,7 +136,7 @@ public class TeleOpProgram extends LinearOpMode
             case 0:
                 if(gamepad2.a){
                     fireruntime.reset();
-                    fireSelector.setPosition(0);
+                    fireSelector.setPosition(.7);
                     fire_state = 1;
                     break;
                 }
@@ -203,7 +203,9 @@ public class TeleOpProgram extends LinearOpMode
             case 0:
                 if(gamepad2.right_stick_button){
                     flywheelMultiplier = .90;
+                    lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE);
                     flywheel_state = 1;
+
                 }
                 break;
             case 1:
@@ -214,7 +216,9 @@ public class TeleOpProgram extends LinearOpMode
             case 2:
                 if (gamepad2.right_stick_button) {
                     flywheelMultiplier = 1;
+                    lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
                     flywheel_state = 3;
+
                 }
                 break;
             case 3:
@@ -294,12 +298,6 @@ public class TeleOpProgram extends LinearOpMode
                 break;
         }
 
-        if (flywheelMultiplier == 1) {
-            lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
-        } else if (flywheelMultiplier == .9) {
-            lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE);
-        }
-
         telemetry.addData("H nutter", "yes");
 //        telemetry.addData("left_front_enc " , leftFront.getCurrentPosition());
 //        telemetry.addData("right_front_enc " , rightFront.getCurrentPosition());
@@ -323,7 +321,6 @@ public class TeleOpProgram extends LinearOpMode
 //        telemetry.addData("ramp_motor_enc", ramp_adjustor.getCurrentPosition());
 //        telemetry.addData("arm_enc", arm.getCurrentPosition());
         telemetry.addData("fire_selector position", fireSelector.getPosition());
-        telemetry.addData("ramp_adjustor", ramp_adjustor.getCurrentPosition());
         telemetry.addData("flywheel speed", flywheelMultiplier);
         telemetry.addData("flywheel_case", flywheel_state);
         telemetry.addData("right stick botton", gamepad2.right_stick_button);
