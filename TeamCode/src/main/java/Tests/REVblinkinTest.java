@@ -22,9 +22,8 @@ public class REVblinkinTest extends LinearOpMode{
        while (opModeIsActive()) {
 
 
-           if (gamepad2.right_stick_button) {
+           if (gamepad2.a) {
                lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.AQUA);
-               lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.CP1_2_TWINKLES);
            }
        }
    }

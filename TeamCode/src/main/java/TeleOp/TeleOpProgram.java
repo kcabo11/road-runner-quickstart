@@ -136,14 +136,14 @@ public class TeleOpProgram extends LinearOpMode
             case 0:
                 if(gamepad2.a){
                     fireruntime.reset();
-                    fireSelector.setPosition(.7);
+                    fireSelector.setPosition(.5);
                     fire_state = 1;
                     break;
                 }
             case 1:
                 if (fireruntime.milliseconds() >= 400) {
                     fireruntime.reset();
-                    fireSelector.setPosition(1);
+                    fireSelector.setPosition(.6);
                     fire_state = 0;
                     break;
                 }
@@ -180,22 +180,6 @@ public class TeleOpProgram extends LinearOpMode
                 break;
         }
 
-        //intake helper
-        switch (intake_state) {
-            case 0:
-                if(gamepad2.b){
-                    intakehelperruntime.reset();
-                    intake_aid.setPosition(0);
-                    intake_state = 1;
-                    break;
-                }
-            case 1:
-                if (intakehelperruntime.milliseconds() >= 300) {
-                    intake_aid.setPosition(.6);
-                    intake_state = 0;
-                    break;
-                }
-        }
 
 
        // Flywheel power control
@@ -203,7 +187,7 @@ public class TeleOpProgram extends LinearOpMode
             case 0:
                 if(gamepad2.right_stick_button){
                     flywheelMultiplier = .90;
-                    lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE);
+                    lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.YELLOW);
                     flywheel_state = 1;
 
                 }
@@ -216,7 +200,7 @@ public class TeleOpProgram extends LinearOpMode
             case 2:
                 if (gamepad2.right_stick_button) {
                     flywheelMultiplier = 1;
-                    lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
+                    lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLUE);
                     flywheel_state = 3;
 
                 }
@@ -228,48 +212,78 @@ public class TeleOpProgram extends LinearOpMode
                 break;
         }
 
-//
-//        switch (rampSensor_state) {
-//            case 0:
-//                if(gamepad2.x){
-//                   while (ramp_sensor.getState() == false) {
-//                       ramp_adjustor.setTargetPosition(-999999);
-//                   }
-//                   ramp_adjustor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//                    intake_state = 1;
-//                    break;
-//                }
-//            case 1:
-//                if (ramp) {
-//
-//                    intake_state = 0;
-//                    break;
-//                }
-//        }
-
 
         //Automated arm mover to selected position
+
+//        switch (arm_state) {
+//            case 0:
+//                if (gamepad2.y){
+//                    arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//                    while (arm.getCurrentPosition() < 800) {
+//                        arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//                        arm.setTargetPosition(800);
+//                        arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//                        arm.setPower(.6);
+//                        arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//                    }
+//                    while (claw.getPosition() < 1) // this needs to be fixed i dont have enough time
+//                    claw.setPosition(1);
+//                    while (arm.getCurrentPosition() < 1600) {
+//                        arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//                        arm.setTargetPosition(1600);
+//                        arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//                        arm.setPower(.6);
+//                        arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//                    }
+//                    arm_state = 1;
+//                }
+//                break;
+//            case 1:
+//                if (!gamepad2.y) {
+//                    arm_state = 2;
+//                }
+//                break;
+//            case 2:
+//                if (gamepad2.y) {
+//                    arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//                   arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//                    while(arm.getCurrentPosition() > -1600) {
+//                       arm.setTargetPosition(-1600);
+//                       arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//                       arm.setPower(-.6);
+//                   }
+//                    arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//                    arm_state = 3;
+//                }
+//                break;
+//            case 3:
+//                if (!gamepad2.y){
+//                    arm_state = 0;
+//                }
+//                break;
+//        }
+
 
         switch (arm_state) {
             case 0:
                 if (gamepad2.y){
                     arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    while (arm.getCurrentPosition() < 800) {
+                    while (arm.getCurrentPosition() < 600) {
                         arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                        arm.setTargetPosition(800);
+                        arm.setTargetPosition(600);
                         arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                        arm.setPower(.6);
+                        arm.setPower(1);
                         arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                     }
-                    while (claw.getPosition() < 1) // this needs to be fixed i dont have enough time
                     claw.setPosition(1);
-                    while (arm.getCurrentPosition() < 1600) {
+                    while (arm.getCurrentPosition() < 1500) {
                         arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                        arm.setTargetPosition(1600);
+                        arm.setTargetPosition(1500);
                         arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                        arm.setPower(.6);
+                        arm.setPower(1);
                         arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                     }
+                    arm.setPower(0);
                     arm_state = 1;
                 }
                 break;
@@ -279,14 +293,21 @@ public class TeleOpProgram extends LinearOpMode
                 }
                 break;
             case 2:
+                arm.setPower(-.09);
                 if (gamepad2.y) {
                     arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                   arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    while(arm.getCurrentPosition() > -1600) {
-                       arm.setTargetPosition(-1600);
-                       arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                       arm.setPower(-.6);
-                   }
+                    arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    while(arm.getCurrentPosition() > -800) {
+                        arm.setTargetPosition(-800);
+                        arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                        arm.setPower(-1);
+                    }
+                    while(arm.getCurrentPosition() > -1700) {
+                        claw.setPosition(0);
+                        arm.setTargetPosition(-1700);
+                        arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                        arm.setPower(-1);
+                    }
                     arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                     arm_state = 3;
                 }
