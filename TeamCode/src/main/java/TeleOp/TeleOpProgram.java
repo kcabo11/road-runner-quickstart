@@ -43,7 +43,7 @@ public class TeleOpProgram extends LinearOpMode
     private int direction = -1;
     // Setting scaling to full speed.
     private double scaleFactor = 1;
-    private double scaleTurningSpeed = .6;
+    private double scaleTurningSpeed = .8;
 
     private int wobble_pos = 1;
 
@@ -186,7 +186,7 @@ public class TeleOpProgram extends LinearOpMode
         switch (flywheel_state) {
             case 0:
                 if(gamepad2.right_stick_button){
-                    flywheelMultiplier = .90;
+                    flywheelMultiplier = .80;
                     lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.YELLOW);
                     flywheel_state = 1;
 
@@ -263,10 +263,9 @@ public class TeleOpProgram extends LinearOpMode
 //                break;
 //        }
 
-
         switch (arm_state) {
             case 0:
-                if (gamepad2.y){
+                if (gamepad2.y) {
                     arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     while (arm.getCurrentPosition() < 600) {
                         arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -297,27 +296,38 @@ public class TeleOpProgram extends LinearOpMode
                 if (gamepad2.y) {
                     arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                     arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    while(arm.getCurrentPosition() > -800) {
+                    if (arm.getCurrentPosition() > -800) {
                         arm.setTargetPosition(-800);
                         arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                         arm.setPower(-1);
-                    }
-                    while(arm.getCurrentPosition() > -1700) {
+                    } else {
                         claw.setPosition(0);
-                        arm.setTargetPosition(-1700);
+                        arm.setTargetPosition(-1800);
                         arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                         arm.setPower(-1);
+                        arm_state = 3;
                     }
-                    arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                    arm_state = 3;
                 }
                 break;
             case 3:
-                if (!gamepad2.y){
+                if (arm.getCurrentPosition() > -1800) {
+                    claw.setPosition(0);
+                    arm.setTargetPosition(-1800);
+                    arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    arm.setPower(-1);
+                } else {
+                    arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    arm_state = 4;
+                }
+
+                break;
+            case 4:
+                if (!gamepad2.y) {
                     arm_state = 0;
                 }
                 break;
-        }
+
+    }
 
         telemetry.addData("H nutter", "yes");
 //        telemetry.addData("left_front_enc " , leftFront.getCurrentPosition());
