@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import org.firstinspires.ftc.robotcontroller.external.samples.SensorDigitalTouch;
@@ -37,6 +38,8 @@ public class TeleOpProgram extends LinearOpMode
     private int arm_state = 0;
     private int flywheel_state = 0;
     private double flywheelMultiplier = 1;
+   // private double flywheelVoltageMultiplier = 1;
+    private double flywheelVoltageSpeed = 1;
 
     String drivingState = "";
 
@@ -50,14 +53,28 @@ public class TeleOpProgram extends LinearOpMode
     private double theta = 22.5;
     private double delta = 45;
     private double speed = 0;
+    private double calc_power;
     private double stick_directon = 0;
 
 
+
+
+    double getBatteryVoltage() {
+        double result = Double.POSITIVE_INFINITY;
+        for (VoltageSensor sensor : hardwareMap.voltageSensor) {
+            double voltage = sensor.getVoltage();
+            if (voltage > 0) {
+                result = Math.min(result, voltage);
+            }
+        }
+        return result;
+    }
     private void setPowers (double leftFrontSpd, double leftBackSpd, double rightFrontSpd, double rightBackSpd) {
         leftFront.setPower(leftFrontSpd);
         leftBack.setPower(leftBackSpd);
         rightFront.setPower(rightFrontSpd);
         rightBack.setPower(rightBackSpd);
+
 }
 
     @Override
@@ -73,15 +90,26 @@ public class TeleOpProgram extends LinearOpMode
         arm = hardwareMap.dcMotor.get("arm");
         claw = hardwareMap.servo.get("claw");
         lights = hardwareMap.get(RevBlinkinLedDriver.class, "lights");
-
         rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
         rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
         waitForStart();
 
-    while (opModeIsActive()) {
+//        if (getBatteryVoltage() <= 12.5) {flywheelVoltageMultiplier = 1;}
+//        if (getBatteryVoltage() > 12.5 && getBatteryVoltage() <= 13) {flywheelVoltageMultiplier = .95;}
+//        if (getBatteryVoltage() > 13 && getBatteryVoltage() <= 13.5) {flywheelVoltageMultiplier = .95;}
+//        if (getBatteryVoltage() > 13.5 && getBatteryVoltage() <= 13) {flywheelVoltageMultiplier = .95;}
+//        if (getBatteryVoltage() > 12.5 && getBatteryVoltage() <= 13) {flywheelVoltageMultiplier = .95;}
+//        if (getBatteryVoltage() > 12.5 && getBatteryVoltage() <= 13) {flywheelVoltageMultiplier = .95;}
+//        if (getBatteryVoltage() > 12.5 && getBatteryVoltage() <= 13) {flywheelVoltageMultiplier = .95;}
 
 
-        drivingState = "";
+
+
+        while (opModeIsActive()) {
+
+
+
+            drivingState = "";
 
         double r = Math.hypot(-gamepad1.left_stick_x, gamepad1.left_stick_y);
         double robotAngle = Math.atan2(-gamepad1.left_stick_y, gamepad1.left_stick_x) - Math.PI / 4;
@@ -123,7 +151,8 @@ public class TeleOpProgram extends LinearOpMode
 
         //flywheel
         if (gamepad2.right_bumper) {
-            flyWheel.setPower(-1 * flywheelMultiplier);
+            flyWheel.setPower(-1 * flywheelMultiplier); // * (-.1 * getBatteryVoltage()) + 2.25);
+            //flyWheel.setPower(calc_power);
         }
         else if (gamepad2.left_bumper) {
             flyWheel.setPower(.3);
@@ -136,7 +165,7 @@ public class TeleOpProgram extends LinearOpMode
             case 0:
                 if(gamepad2.a){
                     fireruntime.reset();
-                    fireSelector.setPosition(.5);
+                    fireSelector.setPosition(.4);
                     fire_state = 1;
                     break;
                 }
@@ -186,7 +215,7 @@ public class TeleOpProgram extends LinearOpMode
         switch (flywheel_state) {
             case 0:
                 if(gamepad2.right_stick_button){
-                    flywheelMultiplier = .80;
+                    flywheelMultiplier = .85;
                     lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.YELLOW);
                     flywheel_state = 1;
 
@@ -202,7 +231,6 @@ public class TeleOpProgram extends LinearOpMode
                     flywheelMultiplier = 1;
                     lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLUE);
                     flywheel_state = 3;
-
                 }
                 break;
             case 3:
@@ -329,6 +357,7 @@ public class TeleOpProgram extends LinearOpMode
 
     }
 
+
         telemetry.addData("H nutter", "yes");
 //        telemetry.addData("left_front_enc " , leftFront.getCurrentPosition());
 //        telemetry.addData("right_front_enc " , rightFront.getCurrentPosition());
@@ -352,11 +381,13 @@ public class TeleOpProgram extends LinearOpMode
 //        telemetry.addData("ramp_motor_enc", ramp_adjustor.getCurrentPosition());
 //        telemetry.addData("arm_enc", arm.getCurrentPosition());
         telemetry.addData("fire_selector position", fireSelector.getPosition());
-        telemetry.addData("flywheel speed", flywheelMultiplier);
+        telemetry.addData("flywheel multiplier", flywheelMultiplier);
         telemetry.addData("flywheel_case", flywheel_state);
         telemetry.addData("right stick botton", gamepad2.right_stick_button);
         telemetry.addData("arm_case", arm_state);
         telemetry.addData("arm_enc", arm.getCurrentPosition());
+        telemetry.addData("Voltage", getBatteryVoltage());
+        telemetry.addData("flywheel speed", calc_power);
         telemetry.update();
     }
     }
